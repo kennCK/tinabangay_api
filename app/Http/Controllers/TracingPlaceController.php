@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-class TracingPlaceController extends Controller
+use App\VisitedPlace;
+use App\Patient;
+class TracingPlaceController extends APIController
 {
   public function places(){
-    echo 'hello';
+    $positiveUser = Patient::where('status', '=', 'positive')->get();
+    if(sizeof($positiveUser) > 0){
+      $i = 0;
+      foreach ($positiveUser as $key) {
+        $positiveUser[$i]['places'] = VisitedPlace::where('deleted_at',  '=', null)->get();
+        $i++;
+      }
+    }
+    $this->response['data'] = $positiveUser;
+    return $this->response();
   }
 }
