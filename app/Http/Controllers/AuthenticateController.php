@@ -54,7 +54,7 @@ class AuthenticateController extends Controller
       $result = Account::whereRaw("BINARY username='".$data["username"]."'")->get();
     }
     if(sizeof($result) > 0){
-      app('App\Http\Controllers\NotificationSettingController')->manageNotification($result[0]['id']);
+      // app('App\Http\Controllers\NotificationSettingController')->manageNotification($result[0]['id']);
     }
     try {
       // verify the credentials and create a token for the user
