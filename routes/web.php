@@ -156,4 +156,8 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/tracings/';
 $controller = 'TracingController@';
 Route::post($route.'tree', $controller."tree");
+
+//Tracing Controller
+$route = env('PACKAGE_ROUTE', '').'/tracing_places/';
+$controller = 'TracingPlaceController@';
 Route::post($route.'places', $controller."places");
