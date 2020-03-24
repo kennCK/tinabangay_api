@@ -82,6 +82,7 @@ class APIController extends Controller
           );
           return false;
         }
+        return true;
       }
       try {
         $user = JWTAuth::parseToken()->authenticate();

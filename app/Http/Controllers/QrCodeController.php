@@ -11,6 +11,7 @@ class QrCodeController extends APIController
   }
 
   public function generate(Request $request){
-    //
+    $data = $request->all();
+    QRCode::text($data['code'])->png(); 
   }
 }
