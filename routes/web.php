@@ -103,3 +103,50 @@ Route::post($route.'block_account', $controller."blockedAccount");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
+
+
+//Qr Code Controller
+$route = env('PACKAGE_ROUTE', '').'/qr_codes/';
+$controller = 'QrCodeController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'generate', $controller. 'generate');
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Temperature Controller
+$route = env('PACKAGE_ROUTE', '').'/temperatures/';
+$controller = 'TemperatureController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Temperature Location Controller
+$route = env('PACKAGE_ROUTE', '').'/temperature_locations/';
+$controller = 'TemperatureLocationController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Visited Places Controller
+$route = env('PACKAGE_ROUTE', '').'/visited_places/';
+$controller = 'VisitedPlaceController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Patients Controller
+$route = env('PACKAGE_ROUTE', '').'/patients/';
+$controller = 'PatientController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
