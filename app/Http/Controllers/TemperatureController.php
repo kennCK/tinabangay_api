@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Temperature;
 use App\TemperatureLocation;
+use Carbon\Carbon;
 class TemperatureController extends APIController
 {
   function __construct(){
