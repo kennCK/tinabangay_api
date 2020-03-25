@@ -5,18 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\VisitedPlace;
 use App\Patient;
+use Illuminate\Support\Facades\DB;
 class TracingPlaceController extends APIController
 {
   public function places(){
-    $positiveUser = Patient::where('status', '=', 'positive')->get();
-    if(sizeof($positiveUser) > 0){
-      $i = 0;
-      foreach ($positiveUser as $key) {
-        $positiveUser[$i]['places'] = VisitedPlace::where('deleted_at',  '=', null)->get();
-        $i++;
-      }
-    }
-    $this->response['data'] = $positiveUser;
+    $positiveUser = DB::table('visited_places AS T1')
+                      ->join('patients AS T2','T2.account_id','=','T1.account_id')
+                      ->where('T2.status','=','positive')
+                      ->whereColumn('T2.updated_at','<=','T1.created_at')
+                      ->whereNull('T2.deleted_at')
+                      ->whereNull('T1.deleted_at')
+                      ->select('T1.*')->get();
+    
+    $this->response['data'] = $positiveUser->groupBy('locality');
     return $this->response();
   }
 }
