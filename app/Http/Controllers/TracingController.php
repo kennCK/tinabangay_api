@@ -31,6 +31,5 @@ class TracingController extends APIController
         //     dd($jsonData);
         // }
      
-
     }
 }
