@@ -29,7 +29,7 @@ class PatientController extends APIController
 
   public function summary(Request $request){
     $this->response['data'] = array(
-      'positve' => Patient::where('status', '=', 'positive')->count(),
+      'positive' => Patient::where('status', '=', 'positive')->count(),
       'pui'     => Patient::where('status', '=', 'pui')->count(),
       'pum'     => Patient::where('status', '=', 'pum')->count()
     );
