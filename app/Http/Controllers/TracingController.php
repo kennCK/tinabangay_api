@@ -14,11 +14,14 @@ class TracingController extends Controller
         // $patients=[];
 
         $placesList = VisitedPlace::with('patients','userInfo')->get();
-        $userinFo = UserInformation::all();
-        if(!empty($placesList)){
-          $jsonData = json_encode($placesList->toArray());
-          dd($jsonData);
-        }
+        
+          $this->retrieveDB($placesList);
+            return $this->response();
+        
+//         if(!empty($placesList)){
+//           $jsonData = json_encode($placesList->toArray());
+//           dd($jsonData);
+//         }
         
         // $list = DB::table('visited_places')
         //         ->join('patients', 'patients.account_id', '=', 'visited_places.account_id')
