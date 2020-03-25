@@ -26,4 +26,13 @@ class PatientController extends APIController
     $this->response['data'] = $data;
     return $this->response();
   }
+
+  public function summary(Request $request){
+    $this->response['data'] = array(
+      'positve' => Patient::where('status', '=', 'positive')->count(),
+      'pui'     => Patient::where('status', '=', 'pui')->count(),
+      'pum'     => Patient::where('status', '=', 'pum')->count()
+    );
+    return $this->response();
+  }
 }
