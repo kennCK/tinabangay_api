@@ -15,14 +15,13 @@ class PatientController extends APIController
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data); 
-
     $i = 0;
     $data = $this->response['data'];
-    foreach ($data as $key => $value) {
-      $place[$i]['places'] = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
+    foreach ($data as $key) {
+      $data[$i]['places'] = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
       $i++;
     }
-
+    $this->response['data'] = $data;
     return $this->response();
   }
 }
