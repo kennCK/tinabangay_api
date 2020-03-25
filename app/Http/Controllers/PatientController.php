@@ -20,7 +20,7 @@ class PatientController extends APIController
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['places'] = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
-      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A')
+      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       $i++;
     }
     $this->response['data'] = $data;
