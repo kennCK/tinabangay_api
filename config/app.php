@@ -168,12 +168,9 @@ return [
         /*
          * Package Service Providers...
          */
-        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 
-
-
-        //Increment\Account\AccountServiceProvider::class,
-
+        Increment\Account\AccountServiceProvider::class,
+        Increment\Common\Invitation\InvitationServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -232,7 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'JWTAuth'   => Tymon\JWTAuthFacades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuthFacades\JWTFactory::class,
-        'QRCode' => LaravelQRCode\Facades\QRCode::class,   
+        'QRCode' => LaravelQRCode\Facades\QRCode::class,
         '_QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ],
 

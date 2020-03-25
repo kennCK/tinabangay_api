@@ -23,4 +23,3 @@ Storage::disk('local')->put($output_file, $image); //storage/app/public/img/qr-c
     QRCode::text($data['code'])->png(); 
   }
 }
-

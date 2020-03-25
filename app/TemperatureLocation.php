@@ -12,5 +12,5 @@ class TemperatureLocation extends APIModel
   public function temperature(){
     return $this->hasMany("App\Temperature" , "id" ,"temperature_id");
   }
-  
+
 }

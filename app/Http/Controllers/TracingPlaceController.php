@@ -55,4 +55,28 @@ class TracingPlaceController extends APIController
     $this->response['data'] = $array;
     return $this->response();
   }
+
+  public function getStatus($location){
+    $places = DB::table('visited_places AS T1')
+      ->join('patients AS T2','T2.account_id','=','T1.account_id')
+      ->where('T1.route','=',$location['route'])
+      ->whereNull('T2.deleted_at')
+      ->whereNull('T1.deleted_at')
+      ->select(['T1.*', 'T2.status'])->get();
+    $places = json_decode($places, true);
+    if(sizeof($places) > 0){
+      $keys = array_column($places, 'status');
+      array_multisort($keys, SORT_ASC, $places);
+      // return $places;
+      switch ($places[0]['status']) {
+        case 'positive':
+          return 'positive';
+        case 'pui':
+          return 'pui';
+        case 'pum':
+          return 'pum';
+      }
+    }
+    return 'negative';
+  }
 }
