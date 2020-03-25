@@ -586,11 +586,6 @@ class APIController extends Controller
   }
 
   public function retrieveAppDetails($result, $accountId){
-    $result['rating'] = app('Increment\Common\Rating\Http\RatingController')->getRatingByPayload('profile', $accountId);
-    $result['cards'] = app('App\Http\Controllers\AccountCardController')->getByParams('account_id', $accountId, 'ADMIN');
-    $result['works'] = app('App\Http\Controllers\WorkController')->getByParams('account_id', $accountId);
-    $result['guarantors'] = app('App\Http\Controllers\GuarantorController')->getByParams('sender', $accountId);
-    $result['educations'] = app('App\Http\Controllers\EducationController')->getByParams('account_id', $accountId);
     return $result;
   }
 
