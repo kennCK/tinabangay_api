@@ -22,22 +22,6 @@ class DatabaseSeeder extends Seeder
         //   array('id' => 10, 'parent_id' => 0,  'description'=>'My Account', 'icon' => 'fa fa-cog',  'path' => 'account_settings', 'rank' => 10)
         // ));
 
-        // DB:: table('account_informations') -> insert(array(
-        //     array('id' => 9, 'account_id' => 6, 'first_name'=>'patrick', 'middle_name' => 'lolo', 'last_name' => 'cabia-an', 'birth_date' => '2000-01-01', 'sex' => 'male', 'cellular_number' => '09484862323', 'address'=> 'Talamban'), 
-        //     array('id' => 10, 'account_id' => 4, 'first_name'=>'leonilo', 'middle_name' => 'yol', 'last_name' => 'torres', 'birth_date' => '2000-03-01', 'sex' => 'male', 'cellular_number' => '09484862325', 'address'=> 'Talamban'),
-        //     array('id' => 4, 'account_id' => 5, 'first_name'=>'renan', 'middle_name' => 'cañete', 'last_name' => 'bargaso', 'birth_date' => '2000-04-01', 'sex' => 'male', 'cellular_number' => '09484862322', 'address'=> 'Talamban')
-        // ));
-
-        // DB:: table('patients') -> insert(array(
-        //     array('id' => 1, 'account_id' => 6, 'added_by'=> 3, 'status' => 'negative'),
-        //     array('id' => 2, 'account_id' => 4, 'added_by'=> 3, 'status' => 'negative'),
-        //     array('id' => 3, 'account_id' => 5, 'added_by'=> 3, 'status' => 'negative'),
-        // ));
-
-        DB:: table('visited_places') -> insert(array(
-            array('id' => 1, 'account_id' => 6, 'longitude'=>90.3, 'latitude'=>40.6, 'route'=>'cebu', 'locality'=>'cebu', 'country'=>'phil', 'region'=>'8', 'date'=> '2000-01-01', 'time'=> Carbon::now()),
-            array('id' => 2, 'account_id' => 5, 'longitude'=>90.3, 'latitude'=>40.6, 'route'=>'cebu', 'locality'=>'cebu', 'country'=>'phil', 'region'=>'8', 'date'=> '2000-01-01', 'time'=> Carbon::now()),
-            array('id' => 3, 'account_id' => 4, 'longitude'=>90.3, 'latitude'=>40.6, 'route'=>'cebu', 'locality'=>'cebu', 'country'=>'phil', 'region'=>'8', 'date'=> '2000-01-01', 'time'=> Carbon::now()),
-        ));
+       
     }
 }
