@@ -18,6 +18,7 @@ class PatientController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
+      $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['places'] = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
       $i++;
     }
