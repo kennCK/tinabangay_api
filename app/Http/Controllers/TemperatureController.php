@@ -18,7 +18,7 @@ class TemperatureController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       $data[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);
-      $location = TemperatureLocation::where('temperature_id', '=', $key['temperature_id'])->get();
+      $location = TemperatureLocation::where('temperature_id', '=', $key['id'])->get();
       $data[$i]['temperature_location'] = sizeof($location) > 0 ? $location[0] : null;
       $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       $i++;
