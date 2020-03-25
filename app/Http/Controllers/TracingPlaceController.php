@@ -1,8 +1,6 @@
-  
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\VisitedPlace;
 use App\Patient;
@@ -22,10 +20,37 @@ class TracingPlaceController extends APIController
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $place['size'] = VisitedPlace::where('route', '=', $key)->count();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->get();
+      $pui = 0;
+      $pum = 0;
+      $positive = 0;
+      $negative = 0;
+      foreach ($visitedPlaces as $keyVisitedPlaces) {
+        $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+        if($patient){
+          switch ($patient->status) {
+            case 'pui':
+              $pui++;
+              break;
+            case 'pum':
+              $pum++;
+              break;
+            case 'positive':
+             $positive++;
+             break; 
+          }
+        }else{
+          $negative++;
+        }
+      }
+      $place['size'] = sizeof($visitedPlaces);
+      $place['positive_size'] = $positive;
+      $place['pui_size'] = $pui;
+      $place['pum_size'] = $pum;
+      $place['negative_size'] = $negative;
       $array[] = $place;
     }
-    $keys = array_column($array, 'size');
+    $keys = array_column($array, 'positive_size');
     array_multisort($keys, SORT_DESC, $array);
     $this->response['data'] = $array;
     return $this->response();
