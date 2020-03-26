@@ -29,7 +29,7 @@ class VisitedPlaceController extends APIController
     $places = VisitedPlace::where($column, '=', $value)->get();
     $j = 0;
     foreach ($places as $key) {
-      $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $placesKey['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
+      $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $key['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
         $j++;
     }
     return $places;
