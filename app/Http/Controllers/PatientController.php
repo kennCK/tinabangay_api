@@ -23,7 +23,7 @@ class PatientController extends APIController
       $j = 0;
       foreach ($places as $placesKey) {
         $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $placesKey['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
-        $places[$j]['time_human'] = Carbon::createFromFormat('H:i A', $placesKey['time'])->copy()->tz($this->response['timezone'])->format('H:i A');
+        $places[$j]['time_human'] = Carbon::createFromFormat('Y-m-d H:i A', $placesKey['date'].' '.$placesKey['time'])->copy()->tz($this->response['timezone'])->format('H:i A');
         $j++;
       }
       $data[$i]['places'] = $places;
