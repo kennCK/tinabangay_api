@@ -19,7 +19,14 @@ class PatientController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $data[$i]['places'] = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
+      $places = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
+      $j = 0;
+      foreach ($places as $placesKey) {
+        $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $placesKey['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
+        $places[$j]['time_human'] = Carbon::createFromFormat('H:i A', $placesKey['time'])->copy()->tz($this->response['timezone'])->format('H:i A');
+        $j++;
+      }
+      $data[$i]['places'] = $places;
       $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       $i++;
     }
