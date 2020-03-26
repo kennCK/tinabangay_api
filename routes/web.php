@@ -167,3 +167,12 @@ Route::post($route.'places', $controller."places");
 $route = env('PACKAGE_ROUTE', '').'/google_places/';
 $controller = 'GooglePlaceController@';
 Route::post($route.'search', $controller."search");
+
+//Transportation Controller
+$route = env('PACKAGE_ROUTE', '').'/transportations/';
+$controller = 'TransportationController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
