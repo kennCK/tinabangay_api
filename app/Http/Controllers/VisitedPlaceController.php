@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\VisitedPlace;
+use Carbon\Carbon;
 class VisitedPlaceController extends APIController
 {
   public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
@@ -23,5 +24,16 @@ class VisitedPlaceController extends APIController
     }
     return $this->response();
   }
+
+  public function getByParams($column, $value){
+    $places = VisitedPlace::where($column, '=', $value)->get();
+    $j = 0;
+    foreach ($places as $key) {
+      $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $placesKey['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
+        $j++;
+    }
+    return $places;
+  }
+
 
 }

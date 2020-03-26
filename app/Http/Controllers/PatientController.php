@@ -8,6 +8,7 @@ use App\VisitedPlace;
 use Carbon\Carbon;
 class PatientController extends APIController
 {
+  public $visitedPlacesClass = 'App\Http\Controllers\VisitedPlaceController';
   function __construct(){
     $this->model = new Patient();
   }
@@ -19,13 +20,7 @@ class PatientController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $places = VisitedPlace::where('account_id', '=', $key['account_id'])->get();
-      $j = 0;
-      foreach ($places as $placesKey) {
-        $places[$j]['date_human'] = Carbon::createFromFormat('Y-m-d', $placesKey['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
-        $j++;
-      }
-      $data[$i]['places'] = $places;
+      $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
       $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       $i++;
     }
