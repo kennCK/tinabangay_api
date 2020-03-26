@@ -162,3 +162,8 @@ Route::post($route.'tree', $controller."tree");
 $route = env('PACKAGE_ROUTE', '').'/tracing_places/';
 $controller = 'TracingPlaceController@';
 Route::post($route.'places', $controller."places");
+
+//Google Places Controller
+$route = env('PACKAGE_ROUTE', '').'/google_places/';
+$controller = 'GooglePlaceController@';
+Route::post($route.'search', $controller."search");
