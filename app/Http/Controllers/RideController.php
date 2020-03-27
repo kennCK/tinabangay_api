@@ -7,6 +7,6 @@ use App\Ride;
 class RideController extends APIController
 {
   function __construct(){
-    $this->model = new Rides();
+    $this->model = new Ride();
   }
 }
