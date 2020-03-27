@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Rides;
+use App\Ride;
 class RideController extends APIController
 {
   function __construct(){
