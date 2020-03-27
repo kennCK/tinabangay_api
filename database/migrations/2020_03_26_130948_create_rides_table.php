@@ -14,11 +14,12 @@ class CreateRidesTable extends Migration
     public function up()
     {
         Schema::create('rides', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->bigInteger('account_id');
             $table->bigInteger('owner_id');
             $table->bigInteger('transportation_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
