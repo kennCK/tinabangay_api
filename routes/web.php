@@ -163,6 +163,10 @@ $route = env('PACKAGE_ROUTE', '').'/tracing_places/';
 $controller = 'TracingPlaceController@';
 Route::post($route.'places', $controller."places");
 
+//Rides Controller
+$route = env('PACKAGE_ROUTE', '').'/rides/';
+$controller = 'RideController@';
+
 //Google Places Controller
 $route = env('PACKAGE_ROUTE', '').'/google_places/';
 $controller = 'GooglePlaceController@';
@@ -180,6 +184,15 @@ Route::get($route.'test', $controller.'test');
 //Ride History Controller
 $route = env('PACKAGE_ROUTE', '').'/ride_history/';
 $controller = 'RideHistoryController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Ride History Controller
+$route = env('PACKAGE_ROUTE', '').'/rides/';
+$controller = 'RideController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
 Route::post($route.'update', $controller."update");
