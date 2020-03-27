@@ -17,7 +17,9 @@ class CreateRideHistoryTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('account_id');
             $table->longText('from');
+            $table->dateTime('from_date_time');
             $table->longText('to');
+            $table->dateTime('to_date_time');
             $table->string('type');
             $table->string('code')->nullable();
             $table->timestamps();
