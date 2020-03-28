@@ -10,7 +10,7 @@ class RideController extends APIController
   function __construct(){
     $this->model = new Ride();
     $this->notRequired = array(
-      'owner_id',
+      'owner',
       'transportation_id',
       'from',
       'from_date_time',
