@@ -13,7 +13,14 @@ class TransportationMappingController extends Controller
     public function map(Request $request)
     {
         $data = $request->all();
-        
+
+        // $rides = Ride::all();
+        // $ride = DB::table('transportations')
+            // ->select('transportations.*')
+        //     ->where('transportations.account_id', '=', )
+        //     ->get();
+        // error_log($ride);
+
         $positiveUser = DB::table('rides')
             ->join('transportations', 'rides.account_id', '=', 'transportations.account_id')
             ->join('patients', 'transportations.account_id', '=', 'patients.account_id')
@@ -54,6 +61,7 @@ class TransportationMappingController extends Controller
               $place['pui_size'] = $pui;
               $place['pum_size'] = $pum;
               $place['negative_size'] = $negative;
+            //   $place['transportation'] = $ride;
               $array[] = $place;
             }
             $keys = array_column($array, 'positive_size');
