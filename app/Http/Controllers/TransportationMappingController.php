@@ -38,6 +38,7 @@ class TransportationMappingController extends Controller
               $pum = 0;
               $positive = 0;
               $negative = 0;
+              $death = 0;
                 foreach ($transportations as $keytransportations) {
                   $patient = Patient::where('account_id', '=', $keytransportations->account_id)->orderBy('created_at', 'desc')->first();
                   if($patient){
@@ -49,8 +50,11 @@ class TransportationMappingController extends Controller
                         $pum++;
                         break;
                       case 'positive':
-                      $positive++;
-                      break; 
+                          $positive++;
+                          break; 
+                      case 'death':
+                        $death++;
+                        break; 
                     }
                   }else{
                     $negative++;
@@ -61,6 +65,7 @@ class TransportationMappingController extends Controller
               $place['pui_size'] = $pui;
               $place['pum_size'] = $pum;
               $place['negative_size'] = $negative;
+              $place['death_size'] = $death;
             //   $place['transportation'] = $ride;
               $array[] = $place;
             }
