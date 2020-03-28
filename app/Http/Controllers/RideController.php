@@ -9,6 +9,16 @@ class RideController extends APIController
 {
   function __construct(){
     $this->model = new Ride();
+    $this->notRequired = array(
+      'owner_id',
+      'transportation_id',
+      'from',
+      'from_date_time',
+      'to',
+      'to_date_time',
+      'type',
+      'code'
+    );
   }
 
   public function retrieve(Request $request){
