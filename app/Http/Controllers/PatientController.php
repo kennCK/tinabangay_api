@@ -36,4 +36,9 @@ class PatientController extends APIController
     );
     return $this->response();
   }
+
+  public function create(Request $request){
+    $data = $request->all(); //
+    // kindly use $this->insertDB() once checked
+  }
 }
