@@ -25,6 +25,7 @@ class TracingPlaceController extends APIController
       $pum = 0;
       $positive = 0;
       $negative = 0;
+      $death = 0;
       foreach ($visitedPlaces as $keyVisitedPlaces) {
         $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
         if($patient){
@@ -38,6 +39,9 @@ class TracingPlaceController extends APIController
             case 'positive':
              $positive++;
              break; 
+            case 'death':
+             $death++;
+             break; 
           }
         }else{
           $negative++;
@@ -48,6 +52,7 @@ class TracingPlaceController extends APIController
       $place['pui_size'] = $pui;
       $place['pum_size'] = $pum;
       $place['negative_size'] = $negative;
+      $place['death_size'] = $death;
       $array[] = $place;
     }
     $keys = array_column($array, 'positive_size');
@@ -75,6 +80,8 @@ class TracingPlaceController extends APIController
           return 'pui';
         case 'pum':
           return 'pum';
+        case 'death':
+          return 'death';
       }
     }
     return 'negative';

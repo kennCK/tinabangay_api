@@ -32,13 +32,15 @@ class PatientController extends APIController
     $this->response['data'] = array(
       'positive' => Patient::where('status', '=', 'positive')->count(),
       'pui'     => Patient::where('status', '=', 'pui')->count(),
-      'pum'     => Patient::where('status', '=', 'pum')->count()
+      'pum'     => Patient::where('status', '=', 'pum')->count(),
+      'death'     => Patient::where('status', '=', 'death')->count(),
+      'negative'     => Patient::where('status', '=', 'negative')->count()
     );
     return $this->response();
   }
 
-  public function create(Request $request){
-    $data = $request->all(); //
-    // kindly use $this->insertDB() once checked
-  }
+  // public function create(Request $request){
+  //   $data = $request->all(); //
+  //   // kindly use $this->insertDB() once checked
+  // }
 }
