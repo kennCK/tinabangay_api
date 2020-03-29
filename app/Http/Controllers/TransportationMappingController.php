@@ -22,8 +22,7 @@ class TransportationMappingController extends Controller
         // error_log($ride);
 
         $positiveUser = DB::table('rides')
-            ->join('transportations', 'rides.account_id', '=', 'transportations.account_id')
-            ->join('patients', 'transportations.account_id', '=', 'patients.account_id')
+            ->join('patients', 'rides.account_id', '=', 'patients.account_id')
             ->where('patients.status', '=', $data['status'])
             ->whereNull('patients.deleted_at')
             ->whereNull('rides.deleted_at')
@@ -33,14 +32,14 @@ class TransportationMappingController extends Controller
             $array = array();
             foreach ($positiveUser as $key => $value) {
               $place = Ride::where('type', '=', $key)->first();
-              $transportations = Ride::where('type', '=', $key)->get();
+              $rides = Ride::where('type', '=', $key)->get();
               $pui = 0;
               $pum = 0;
               $positive = 0;
               $negative = 0;
               $death = 0;
-                foreach ($transportations as $keytransportations) {
-                  $patient = Patient::where('account_id', '=', $keytransportations->account_id)->orderBy('created_at', 'desc')->first();
+                foreach ($rides as $keyrides) {
+                  $patient = Patient::where('account_id', '=', $keyrides->account_id)->orderBy('created_at', 'desc')->first();
                   if($patient){
                     switch ($patient->status) {
                       case 'pui':
@@ -60,7 +59,7 @@ class TransportationMappingController extends Controller
                     $negative++;
                   }
                 }
-              $place['size'] = sizeof($transportations);
+              $place['size'] = sizeof($rides);
               $place['positive_size'] = $positive;
               $place['pui_size'] = $pui;
               $place['pum_size'] = $pum;
