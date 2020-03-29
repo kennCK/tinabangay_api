@@ -12,4 +12,8 @@ class Transportation extends Model
   public function userInfo(){
     return $this->hasMany('App\UserInformation', 'account_id', 'account_id');
   }
+
+  public function rides(){
+    return $this->belongsTo('App\Ride', 'transportation_id');
+  }
 }
