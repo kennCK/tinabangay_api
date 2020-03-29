@@ -24,11 +24,6 @@ class DatabaseSeeder extends Seeder
         //   array('id' => 10, 'parent_id' => 0,  'description'=>'My Account', 'icon' => 'fa fa-cog',  'path' => 'account_settings', 'rank' => 10)
         // ));
 
-        // DB:: table('transportations')->insert(array(
-        //     array('id'=>1, 'account_id'=>1, 'number'=>'1', 'type'=>'type1', 'model'=>'model1'),
-        //     array('id'=>2, 'account_id'=>2, 'number'=>'2', 'type'=>'type2', 'model'=>'model2'),
-        //     array('id'=>3, 'account_id'=>3, 'number'=>'3', 'type'=>'type3', 'model'=>'model3'),
-        // ));
 
         // DB:: table('rides')->insert(array(
         //     array('id'=>1, 'account_id'=>1, 'payload'=>'1', 'owner'=>1, 'transportation_id'=>'123', 'from' => 'talamban', 'from_date_time'=>$dateNow, 'to'=>'colon', 'to_date_time'=>$dateNow, 'type'=>'type1', 'code'=>'code1'),
