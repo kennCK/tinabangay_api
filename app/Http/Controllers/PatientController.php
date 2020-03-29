@@ -39,8 +39,21 @@ class PatientController extends APIController
     return $this->response();
   }
 
-  // public function create(Request $request){
-  //   $data = $request->all(); //
-  //   // kindly use $this->insertDB() once checked
-  // }
+  public function create(Request $request){
+    $data = $request->all(); 
+    $accountId = $data['account_id'];
+    $addedBy = $data['added_by']; 
+    $newStatus = $data['status']; 
+
+    $previous = Patient::where('account_id', '=', $accountId)->latest();
+
+    if(sizeof($previous) > 0 && $previous[0]['status'] == $newStatus){
+      $this->response['data'] = null;
+      $this->response['error'] = "Duplicate Entry!";
+    }else{      
+      $this->insertDB($data);
+    }
+
+    return $this->response();
+  }
 }
