@@ -26,23 +26,23 @@ class TracingPlaceController extends APIController
       $positive = 0;
       $negative = 0;
       $death = 0;
-        foreach ($visitedPlaces as $keyVisitedPlaces) {
-          $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
-          if($patient){
-            switch ($patient->status) {
-              case 'pui':
-                $pui++;
-                break;
-              case 'pum':
-                $pum++;
-                break;
-              case 'positive':
-                $positive++;
-                break; 
-              case 'death':
-                $death++;
-                break; 
-            }
+      foreach ($visitedPlaces as $keyVisitedPlaces) {
+      $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+        if($patient){
+          switch ($patient->status) {
+            case 'pui':
+              $pui++;
+              break;
+            case 'pum':
+              $pum++;
+              break;
+            case 'positive':
+              $positive++;
+              break; 
+            case 'death':
+              $death++;
+              break; 
+          }
           }else{
             $negative++;
           }
@@ -80,6 +80,8 @@ class TracingPlaceController extends APIController
           return 'pui';
         case 'pum':
           return 'pum';
+        case 'death':
+          return 'death';
       }
     }
     return 'negative';
