@@ -8,26 +8,30 @@ use Illuminate\Support\Facades\DB;
 class TracingPlaceController extends APIController
 {
   public function places(Request $request){
+    $default = 0;
+    if ($request->pagenumber > 1 ){
+      $default  += $request->limitnumber*($default-1); 
+    };
     $data = $request->all();
     $positiveUser = DB::table('visited_places AS T1')
       ->join('patients AS T2','T2.account_id','=','T1.account_id')
       ->where('T2.status','=',$data['status'])
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
-      ->select('T1.*')->get();
-    
+      ->select('T1.*')
+      ->get();
     $positiveUser = $positiveUser->groupBy('route');
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($default)->take($request->limitnumber)->get();
       $pui = 0;
       $pum = 0;
       $positive = 0;
       $negative = 0;
       $death = 0;
       foreach ($visitedPlaces as $keyVisitedPlaces) {
-        $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+      $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
         if($patient){
           switch ($patient->status) {
             case 'pui':
@@ -37,14 +41,15 @@ class TracingPlaceController extends APIController
               $pum++;
               break;
             case 'positive':
-             $positive++;
-             break; 
+              $positive++;
+              break; 
             case 'death':
-             $death++;
-             break; 
+              $death++;
+              break; 
           }
-        }else{
-          $negative++;
+          }else{
+            $negative++;
+          }
         }
       }
       $place['size'] = sizeof($visitedPlaces);
