@@ -18,8 +18,9 @@ class VisitedPlaceController extends APIController
     $this->retrieveDB($data); // store to 
     $data = $this->response['data'];
     $i = 0;
-    foreach ($data as $key => $value) {
+    foreach ($data as $key) {
       $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i]);
+      $this->response['data'][$i]['date_human'] = Carbon::createFromFormat('Y-m-d', $key['date'])->copy()->tz($this->response['timezone'])->format('F j, Y');
       $i++;
     }
     return $this->response();

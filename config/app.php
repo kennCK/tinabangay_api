@@ -171,6 +171,7 @@ return [
 
         Increment\Account\AccountServiceProvider::class,
         Increment\Common\Invitation\InvitationServiceProvider::class,
+        Increment\Common\System\SystemNotificationServiceProvider::class,
         /*
          * Application Service Providers...
          */
