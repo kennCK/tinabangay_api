@@ -19,13 +19,12 @@ class TracingPlaceController extends APIController
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->select('T1.*')
-      ->skip($default)->take($request->limitnumber)
       ->get();
     $positiveUser = $positiveUser->groupBy('route');
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($default)->take($request->limitnumber)->get();
       $pui = 0;
       $pum = 0;
       $positive = 0;
