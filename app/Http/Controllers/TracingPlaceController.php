@@ -52,9 +52,6 @@ class TracingPlaceController extends APIController
           }
         }
       }
-      $place['limit'] = $request->limitnumber;
-      $place['page'] = $default;
-
       $place['size'] = sizeof($visitedPlaces);
       $place['positive_size'] = $positive;
       $place['pui_size'] = $pui;
