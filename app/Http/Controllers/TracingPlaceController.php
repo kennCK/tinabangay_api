@@ -51,20 +51,20 @@ class TracingPlaceController extends APIController
             $negative++;
           }
         }
+        $place['size'] = sizeof($visitedPlaces);
+        $place['positive_size'] = $positive;
+        $place['pui_size'] = $pui;
+        $place['pum_size'] = $pum;
+        $place['negative_size'] = $negative;
+        $place['death_size'] = $death;
+        $array[] = $place;
       }
-      $place['size'] = sizeof($visitedPlaces);
-      $place['positive_size'] = $positive;
-      $place['pui_size'] = $pui;
-      $place['pum_size'] = $pum;
-      $place['negative_size'] = $negative;
-      $place['death_size'] = $death;
-      $array[] = $place;
+      $keys = array_column($array, 'positive_size');
+      array_multisort($keys, SORT_DESC, $array);
+      $this->response['data'] = $array;
+      return $this->response();
+     
     }
-    $keys = array_column($array, 'positive_size');
-    array_multisort($keys, SORT_DESC, $array);
-    $this->response['data'] = $array;
-    return $this->response();
-  }
 
   public function getStatus($location){
     $places = DB::table('visited_places AS T1')

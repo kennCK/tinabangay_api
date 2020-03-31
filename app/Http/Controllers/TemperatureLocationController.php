@@ -11,7 +11,7 @@ class TemperatureLocationController extends APIController
   }
   function retrieve(Request $request){
 
-    $resp=   TemperatureLocation::with("temperature")->get();
+    $resp= TemperatureLocation::with("temperature")->get();
     $this->retrieveDB($resp);
     return $this->response(); 
   }
