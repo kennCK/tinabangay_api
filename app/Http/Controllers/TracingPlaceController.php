@@ -67,7 +67,6 @@ class TracingPlaceController extends APIController
       // array_multisort($keys, SORT_DESC, $array);
       // $this->response['data'] = $array;
       // return $this->response();
-    }
       $keys = array_column($array, 'positive_size');
       array_multisort($keys, SORT_DESC, $array);
      //  if ($isPaginate ==  true) {
