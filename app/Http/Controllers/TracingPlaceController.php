@@ -8,10 +8,16 @@ use Illuminate\Support\Facades\DB;
 class TracingPlaceController extends APIController
 {
   public function places(Request $request){
-    $default = 0;
-    if ($request->pagenumber > 1 ){
-      $default  += $request->limitnumber*($default-1); 
-    };
+    $isPaginate = false;
+    $page_start = 0;
+    $page_end = 10;
+    if (isset($request->offset) && isset($request->limit)) {
+      $isPaginate = true;
+      $page_start =  $request->offset == 1 ? 0 :  $request->limit*(($request->offset)); 
+      $page_end = $page_start+$request->limit;
+    }
+    
+    
     $data = $request->all();
     $positiveUser = DB::table('visited_places AS T1')
       ->join('patients AS T2','T2.account_id','=','T1.account_id')
@@ -24,7 +30,7 @@ class TracingPlaceController extends APIController
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($default)->take($request->limitnumber)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($default)->take($request->limit)->get();
       $pui = 0;
       $pum = 0;
       $positive = 0;
@@ -60,10 +66,19 @@ class TracingPlaceController extends APIController
       $place['death_size'] = $death;
       $array[] = $place;
     }
-    $keys = array_column($array, 'positive_size');
-    array_multisort($keys, SORT_DESC, $array);
-    $this->response['data'] = $array;
-    return $this->response();
+      $keys = array_column($array, 'positive_size');
+      array_multisort($keys, SORT_DESC, $array);
+      if ($isPaginate ==  true) {
+      $start = ($page_start > count($array)) ? 0 : $page_start ;
+      $end = ($page_end > count($array)) ? count($array) : $page_end ;
+       $paged_array = array();
+      for ($i = $start; $i < $end ; $i++) { 
+         array_push($paged_array, $array[$i]);
+      }
+      $array = $paged_array; 
+     }
+     $this->response['data'] = $array;
+     return $this->response();
   }
 
   public function getStatus($location){
