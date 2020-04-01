@@ -35,7 +35,7 @@ class TracingPlaceController extends APIController
       $negative = 0;
       $death = 0;
       foreach ($visitedPlaces as $keyVisitedPlaces) {
-      $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+        $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
         if($patient){
           switch ($patient->status) {
             case 'pui':
@@ -63,23 +63,22 @@ class TracingPlaceController extends APIController
         $place['death_size'] = $death;
         $array[] = $place;
       }
-      $keys = array_column($array, 'positive_size');
-      array_multisort($keys, SORT_DESC, $array);
-      $this->response['data'] = $array;
-      return $this->response();
-     
+      // $keys = array_column($array, 'positive_size');
+      // array_multisort($keys, SORT_DESC, $array);
+      // $this->response['data'] = $array;
+      // return $this->response();
     }
       $keys = array_column($array, 'positive_size');
       array_multisort($keys, SORT_DESC, $array);
-      if ($isPaginate ==  true) {
-      $start = ($page_start > count($array)) ? 0 : $page_start ;
-      $end = ($page_end > count($array)) ? count($array) : $page_end ;
-       $paged_array = array();
-      for ($i = $start; $i < $end ; $i++) { 
-         array_push($paged_array, $array[$i]);
-      }
-      $array = $paged_array; 
-     }
+     //  if ($isPaginate ==  true) {
+     //  $start = ($page_start > count($array)) ? 0 : $page_start ;
+     //  $end = ($page_end > count($array)) ? count($array) : $page_end ;
+     //   $paged_array = array();
+     //  for ($i = $start; $i < $end ; $i++) { 
+     //     array_push($paged_array, $array[$i]);
+     //  }
+     //  $array = $paged_array; 
+     // }
      $this->response['data'] = $array;
      return $this->response();
   }
