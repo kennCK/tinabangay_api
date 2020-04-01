@@ -11,6 +11,9 @@ class TemperatureController extends APIController
 {
   function __construct(){
     $this->model = new Temperature();
+    $this->notRequired = array(
+      'remarks'
+    );
   }
 
   public function retrieve(Request $request){
