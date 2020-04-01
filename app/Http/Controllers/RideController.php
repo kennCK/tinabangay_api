@@ -42,48 +42,25 @@ class RideController extends APIController
     return $this->response();
   }
   public function checkRoute($route){
-    $routes[0] = DB::table('visited_places AS T1')
+    $retVal = array('from'=>'negative','to'=>'negative');
+    $possibleStatus = array('death','positive','pum','pui','negative');
+    $routes = DB::table('visited_places AS T1')
       ->join("patients AS T2","T1.account_id",'=','T2.account_id')
-      ->where('T1.route','=',$route['from'])
-      ->where('T1.account_id','!=',$route['account_id'])
-      ->pluck('status');
-    $routes[1] = DB::table('visited_places AS T1')
-      ->join("patients AS T2","T1.account_id",'=','T2.account_id')
-      ->where('T1.route','=',$route['to'])
-      ->where('T1.account_id','!=',$route['account_id'])
-      ->pluck('status');
-    $person = Patient::where("account_id","=",$route['account_id'])
-      ->whereNull("deleted_at")
-      ->pluck('status');
-    $person = json_decode($person,true);
-    for ($i=0 ; $i<2 ; $i++){
-      if (count($routes[$i])==0){
-        if (isset($person[0])){
-          $routes[$i] = $person[0];
-        }else{
-          $routes[$i] = 'negative';
+      ->whereIn('T1.route',[$route['from'],$route['to']])
+      ->select(['T1.route AS route','T2.status AS status'])
+      ->get();
+    $routes = json_decode($routes,true); 
+    foreach ($routes as $key => $value) {
+      if ($value['route']==$route['from']){
+        if (array_search($value['status'],$possibleStatus)<array_search($retVal['from'],$possibleStatus)){
+          $retVal['from'] = $value['status'];
         }
-      }else {
-        $routes[$i] = $routes[$i]->groupBy('status');
-        $routes[$i] = json_decode($routes[$i],true); 
-        $routes[$i] = $routes[$i][null];
-        if (in_array('death',$routes[$i]) || (isset($person[0]) && $person[0]=='death')){
-          $routes[$i] = 'death';
-        }else if (in_array('positive',$routes[$i]) || (isset($person[0]) && $person[0]=='positive')){
-          $routes[$i] = 'positive';
-        }else if (in_array('pum',$routes[$i]) || (isset($person[0]) && $person[0]=='pum')){
-          $routes[$i] = 'pum';
-        }else if (in_array('pui',$routes[$i]) || (isset($person[0]) && $person[0]=='pui')){
-          $routes[$i] = 'pui';
-        }else {
-          $routes[$i] = 'negative';
+      }else if ($value['route']==$route['to']){
+        if (array_search($value['status'],$possibleStatus)<array_search($retVal['to'],$possibleStatus)){
+          $retVal['to'] = $value['status'];
         }
       }
     }
-    $routes['from'] = &$routes[0];
-    unset($routes[0]);
-    $routes['to'] = &$routes[1];
-    unset($routes[1]);
-    return $routes;
+    return $retVal;
   }
 }
