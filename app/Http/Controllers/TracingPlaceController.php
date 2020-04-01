@@ -28,7 +28,7 @@ class TracingPlaceController extends APIController
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($default)->take($request->limit)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($page_start)->take($page_end)->get();
       $pui = 0;
       $pum = 0;
       $positive = 0;
