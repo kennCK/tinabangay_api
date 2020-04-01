@@ -11,6 +11,9 @@ class PatientController extends APIController
   public $visitedPlacesClass = 'App\Http\Controllers\VisitedPlaceController';
   function __construct(){
     $this->model = new Patient();
+    $this->notRequired = array(
+      'remarks'
+    );
   }
 
   public function retrieve(Request $request){
@@ -34,7 +37,8 @@ class PatientController extends APIController
       'pui'     => Patient::where('status', '=', 'pui')->count(),
       'pum'     => Patient::where('status', '=', 'pum')->count(),
       'death'     => Patient::where('status', '=', 'death')->count(),
-      'negative'     => Patient::where('status', '=', 'negative')->count()
+      'negative'     => Patient::where('status', '=', 'negative')->count(),
+      'recovered'     => Patient::where('status', '=', 'recovered')->count()
     );
     return $this->response();
   }
@@ -42,18 +46,14 @@ class PatientController extends APIController
   public function create(Request $request){
     $data = $request->all(); 
     $accountId = $data['account_id'];
-    $addedBy = $data['added_by']; 
     $newStatus = $data['status']; 
-
-    $previous = Patient::where('account_id', '=', $accountId)->latest();
-
+    $previous = Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get();
     if(sizeof($previous) > 0 && $previous[0]['status'] == $newStatus){
       $this->response['data'] = null;
       $this->response['error'] = "Duplicate Entry!";
     }else{      
       $this->insertDB($data);
     }
-
     return $this->response();
   }
 }
