@@ -65,6 +65,7 @@ class TracingPlaceController extends APIController
         $place['pum_size'] = $pum;
         $place['negative_size'] = $negative;
         $place['death_size'] = $death;
+        $place['recovered_size'] = $recovered;
         $array[] = $place;
       }
       // $keys = array_column($array, 'positive_size');
