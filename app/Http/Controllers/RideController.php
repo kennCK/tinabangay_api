@@ -32,12 +32,12 @@ class RideController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
+      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
         $fromTo = $this->checkRoute($key);
         $data[$i]['from_status'] = $fromTo['from'];
         $data[$i]['to_status'] = $fromTo['to']; // work on this later
-        $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
         $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
         $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       }else if($key['payload'] == 'qr'){
