@@ -28,12 +28,13 @@ class TracingPlaceController extends APIController
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->skip($page_start)->take($page_end)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->where('account_id', '!=', )->get();
       $pui = 0;
       $pum = 0;
-      $positive = 0;
+      $positive = sizeof($value);
       $negative = 0;
       $death = 0;
+      $recovered = 0;
       foreach ($visitedPlaces as $keyVisitedPlaces) {
         $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
         if($patient){
@@ -43,10 +44,12 @@ class TracingPlaceController extends APIController
               break;
             case 'pum':
               $pum++;
-              break;
-            case 'positive':
-              $positive++;
               break; 
+            case 'negative':
+              $negative++;
+              break; 
+            case 'recovered':
+              $recovered++;
             case 'death':
               $death++;
               break; 
@@ -103,6 +106,10 @@ class TracingPlaceController extends APIController
           return 'pum';
         case 'death':
           return 'death';
+        case 'recovered':
+          return 'recovered';
+        case 'negative':
+          return 'negative';
       }
     }
     return 'negative';
