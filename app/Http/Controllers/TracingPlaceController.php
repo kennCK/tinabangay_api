@@ -27,11 +27,12 @@ class TracingPlaceController extends APIController
     $positiveUser = $positiveUser->groupBy('route');
     $array = array();
     foreach ($positiveUser as $key => $value) {
+      $groupByAccount = $value->groupBy('account_id');
       $place = VisitedPlace::where('route', '=', $key)->first();
       $visitedPlaces = VisitedPlace::where('route', '=', $key)->where('account_id', '!=', )->get();
       $pui = 0;
       $pum = 0;
-      $positive = sizeof($value);
+      $positive = count($groupByAccount);
       $negative = 0;
       $death = 0;
       $recovered = 0;
