@@ -7,7 +7,6 @@ use App\VisitedPlace;
 use App\Patient;
 use App\UserInformation;
 
-//for getHistory()
 use App\Account;
 use App\Temperature;
 use App\Ride;
@@ -17,12 +16,9 @@ use DB;
 class TracingController extends APIController
 {
     public function tree(){
-        // $patients=[];
-
         $placesList = VisitedPlace::with('patients','userInfo')->get();
-        
-          $this->retrieveDB($placesList);
-            return $this->response();
+        $this->retrieveDB($placesList);
+        return $this->response();
         
 //         if(!empty($placesList)){
 //           $jsonData = json_encode($placesList->toArray());
@@ -42,7 +38,7 @@ class TracingController extends APIController
      
     }
 
-    function getHistory($username, $agent_id){
+    public function getHistory($username, $agent_id){
       // retrieve the history of visited places, temperature 
       // and transportation 
       // of the user by passing 
@@ -67,9 +63,15 @@ class TracingController extends APIController
       }else{
         $this->response['error'] = 'Agent not found';
       }
-
       return $this->response();
+    }
 
-
+    public function getStatus(Request $request){
+      $data = $request->all();
+      $status = 'negative';
+      $this->response['data'] = array(
+        'status' => $status
+      );
+      return $this->response();
     }
 }
