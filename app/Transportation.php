@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Transportation extends Model
+class Transportation extends APIModel
 {
   protected $table = 'transportations';
   protected $fillable = ['account_id', 'number', 'type', 'model'];

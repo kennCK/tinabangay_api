@@ -8,6 +8,9 @@ class TransportationController extends APIController
 {
   function __construct(){
     $this->model = new Transportation();
+    $this->notRequired = array(
+      'number'
+    );
   }
 
   public function getByParams($column, $value){
