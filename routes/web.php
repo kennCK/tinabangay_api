@@ -148,6 +148,7 @@ $route = env('PACKAGE_ROUTE', '').'/patients/';
 $controller = 'PatientController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_notifications', $controller."retrieveNotifications");
 Route::post($route.'summary', $controller."summary");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
