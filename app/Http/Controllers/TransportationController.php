@@ -26,7 +26,7 @@ class TransportationController extends APIController
   }
 
   public function getByParams($column, $value){
-    $result = Transportation::where($column, '=', $value)->get();
+    $result = Transportation::where($column, '=', $value)->orderBy('updated_at', 'desc')->get();
     return (sizeof($result) > 0) ? $result[0] : null;
   }
 }
