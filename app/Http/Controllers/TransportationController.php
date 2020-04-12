@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transportation;
+use Carbon\Carbon;
 class TransportationController extends APIController
 {
   function __construct(){
@@ -11,6 +12,17 @@ class TransportationController extends APIController
     $this->notRequired = array(
       'number'
     );
+  }
+
+  public function update(Request $request){
+    $data = $request->all();
+    Transportation::where('id', '=', $data['id'])->update(
+      array(
+        'updated_at' => Carbon::now()
+      )
+    );
+    $this->response['data'] = true;
+    return $this->response();
   }
 
   public function getByParams($column, $value){
