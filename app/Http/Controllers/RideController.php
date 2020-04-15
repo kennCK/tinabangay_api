@@ -25,6 +25,20 @@ class RideController extends APIController
       'code'
     );
   }
+  public function getDate($date){
+    $day = floor($date / (24 * 3600)); 
+  
+    $n = ($n % (24 * 3600)); 
+    $hour = $date / 3600; 
+  
+    $n %= 3600; 
+    $minutes = $date / 60 ; 
+  
+    $n %= 60; 
+    $seconds = $date; 
+
+    return "$day days $hour hours $minutes minutes $seconds seconds";
+  }
 
   public function retrieve(Request $request){
     $data = $request->all();
@@ -32,44 +46,30 @@ class RideController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
-      // Days, hour , Min time format
-      $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-      $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['created_at'])->format("Y-m-d H:i:s"));
-      $days = $start_date->diffInDays($end_date);
-      $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-      $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-      $dayRes = $days!=0?$days:'';
-      $hourRes = $hour!=0?$hour:$hour;
-      $minRes =  $minute!=0?$minute:'';
-      $data[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $datenow = Carbon::now()->format("Y-m-d H:i:s");
+      $end_date = Carbon::parse(Carbon::createFromFormat('Y-m-d', $key['created_at'])->format("Y-m-d H:i:s"));
+      $secondRes = $end_date->diffInSeconds($datenow);
+      
+      // Seconds Convert to Day
+      $day = floor($secondRes / (24 * 3600)); 
+  
+      $secondRes = ($secondRes % (24 * 3600)); 
+      $hour = $secondRes / 3600; 
+    
+      $secondRes %= 3600; 
+      $minutes = $secondRes / 60 ; 
+    
+      $secondRes %= 60; 
+      $seconds = $secondRes; 
+      // Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A')
+      $data[$i]['created_at_human'] = "$day days $hour hours $minutes minutes $seconds seconds";
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
         $fromTo = $this->checkRoute($key);
         $data[$i]['from_status'] = $fromTo['from'];
         $data[$i]['to_status'] = $fromTo['to']; // work on this later
-
-         // Days, hour , Min time format
-        $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['from_date_time'])->format("Y-m-d H:i:s"));
-        $days = $start_date->diffInDays($end_date);
-        $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-        $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-        $dayRes = $days!=0?$days:'';
-        $hourRes = $hour!=0?$hour:$hour;
-        $minRes =  $minute!=0?$minute:'';
-        
-         // Days, hour , Min time format
-        $end_date2 = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date2 = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['to_date_time'])->format("Y-m-d H:i:s"));
-        $days2 = $start_date2->diffInDays($end_date2);
-        $hour2 = $start_date2->copy()->addDays($days2)->diffInHours($end_date2);
-        $minute2 = $end_date2->copy()->addDays($days2)->addHours($hour2)->diffInMinutes($end_date2);
-        $dayRes2 = $days2!=0?$days2:'';
-        $hourRes2 = $hour2!=0?$hour2:$hour2;
-        $minRes2 =  $minute2!=0?$minute2:'';
-
-        $data[$i]['from_date_human'] ="$dayRes days, $hourRes h:$minRes min";
-        $data[$i]['to_date_human'] = "$dayRes2 days, $hourRes2 h:$minRes2 min";
+        $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       }else if($key['payload'] == 'qr'){
         $data[$i]['transportation'] = app($this->transportationClass)->getByParams('account_id', $key['owner']);
          $data[$i]['from_status'] = 'negative';// work on this later
