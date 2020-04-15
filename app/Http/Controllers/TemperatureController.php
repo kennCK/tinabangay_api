@@ -21,11 +21,16 @@ class TemperatureController extends APIController
     $data = $request->all();
     $this->insertDB($data);
     if($data['location'] != null){
-      $visitedPlaces = $data['location'];
-      $visitedPlaces['location']['account_id'] = $data['account_id'];
-      $visitedPlaces['location']['date'] = null;
-      $visitedPlaces['location']['time'] = null;
-      $visitedPlaces['location']['created_at'] = Carbon::now();
+      $visitedPlaces = array(
+        'created_at'  => Carbon::now(),
+        'account_id'  => $data['account_id'],
+        'route'       => $data['location']['route'],
+        'region'      => $data['location']['region'],
+        'locality'    => $data['location']['locality'],
+        'country'     => $data['location']['country'],
+        'date'        =>  null,
+        'time'        =>  null
+      );
       VisitedPlace::insert($visitedPlaces);
     }
     return $this->response();
