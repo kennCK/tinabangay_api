@@ -33,7 +33,7 @@ class RideController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       // Days, hour , Min time format
-      $data[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
         $fromTo = $this->checkRoute($key);
