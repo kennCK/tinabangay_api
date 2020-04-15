@@ -38,10 +38,16 @@ class DatabaseSeeder extends Seeder
         //     array('id'=>3, 'account_id'=>3, 'added_by'=>3, 'status'=>'PUI'),
         // ));
 
-        // DB:: table('visited_places')->insert(array(
-        //     array('id'=>1, 'account_id'=>1, 'longitude'=>'1', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8', 'date'=> Carbon::now(), 'time'=>$dateNow),
-        //     array('id'=>2, 'account_id'=>2, 'longitude'=>'2', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8', 'date'=> Carbon::now(), 'time'=>$dateNow),
-        //     array('id'=>3, 'account_id'=>3, 'longitude'=>'3', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8', 'date'=> Carbon::now(), 'time'=>$dateNow),
+        //  DB:: table('temperatures')->insert(array(
+        //     array('id'=>1, 'account_id'=>1, 'added_by'=>1, 'value'=>36.2, 'remarks'=>'good'),
+        //     array('id'=>2, 'account_id'=>2, 'added_by'=>2, 'value'=>35.2, 'remarks'=>'good'),
+        //     array('id'=>3, 'account_id'=>3, 'added_by'=>3, 'value'=>34.2, 'remarks'=>'good'),
+        // ));
+        
+        // DB:: table('temperature_locations')->insert(array(
+        //     array('id'=>1, 'account_id'=>1, 'temperature_id'=>'1', 'longitude'=>'1', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8'),
+        //     array('id'=>2, 'account_id'=>2, 'temperature_id'=>'2', 'longitude'=>'1', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8'),
+        //     array('id'=>3, 'account_id'=>3, 'temperature_id'=>'3', 'longitude'=>'1', 'latitude'=>'1', 'route' => 'colon-madawe', 'locality'=>'colon', 'country'=>'phil', 'region'=>'8'),
         // ));
     }
 }
