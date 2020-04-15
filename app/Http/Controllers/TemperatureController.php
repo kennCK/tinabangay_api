@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Temperature;
 use App\TemperatureLocation;
+use App\VisitedPlace;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 class TemperatureController extends APIController
@@ -14,6 +15,20 @@ class TemperatureController extends APIController
     $this->notRequired = array(
       'remarks'
     );
+  }
+
+  public function create(Request $request){
+    $data = $request->all();
+    $this->insertDB($data);
+    if($data['location'] != null){
+      $visitedPlaces = $data['location'];
+      $visitedPlaces['location']['account_id'] = $data['account_id'];
+      $visitedPlaces['location']['date'] = null;
+      $visitedPlaces['location']['time'] = null;
+      $visitedPlaces['location']['created_at'] = Carbon::now();
+      VisitedPlace::insert($visitedPlaces);
+    }
+    return $this->response();
   }
 
   public function retrieve(Request $request){
