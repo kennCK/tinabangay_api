@@ -30,8 +30,8 @@ class TemperatureController extends APIController
         'country'     => $data['location']['country'],
         'longitude'    => $data['location']['longitude'],
         'latitude'     => $data['location']['latitude'],
-        'date'        =>  null,
-        'time'        =>  null
+        'date'        =>  Carbon::parse(Carbon::now()->format("Y-m-d")),
+        'time'        =>  Carbon::parse(Carbon::now()->format("H:i:s"))
       );
       VisitedPlace::insert($visitedPlaces);
     }
