@@ -28,6 +28,8 @@ class TemperatureController extends APIController
         'region'      => $data['location']['region'],
         'locality'    => $data['location']['locality'],
         'country'     => $data['location']['country'],
+        'longitude'    => $data['location']['longitude'],
+        'latitude'     => $data['location']['latitude'],
         'date'        =>  null,
         'time'        =>  null
       );
