@@ -25,21 +25,7 @@ class RideController extends APIController
       'code'
     );
   }
-  public function getDate($date){
-    $day = floor($date / (24 * 3600)); 
   
-    $n = ($n % (24 * 3600)); 
-    $hour = $date / 3600; 
-  
-    $n %= 3600; 
-    $minutes = $date / 60 ; 
-  
-    $n %= 60; 
-    $seconds = $date; 
-
-    return "$day days $hour hours $minutes minutes $seconds seconds";
-  }
-
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);
