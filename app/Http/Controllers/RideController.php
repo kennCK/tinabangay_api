@@ -34,9 +34,9 @@ class RideController extends APIController
     foreach ($data as $key) {
       $datenow = Carbon::now()->format("Y-m-d H:i:s");
       $end_date = Carbon::parse(Carbon::createFromFormat('Y-m-d', $key['created_at'])->format("Y-m-d H:i:s"));
-      $day = $end_date->diffInDays($datenow);
+      $days = $end_date->diffInDays($datenow);
       // Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A')
-      $data[$i]['created_at_human'] = "$day days";
+      $data[$i]['created_at_human'] = "$days days";
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
         $fromTo = $this->checkRoute($key);
