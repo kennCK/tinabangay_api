@@ -31,7 +31,7 @@ class VisitedPlaceController extends APIController
       $hourRes = $hour!=0?$hour:$hour;
       $minRes =  $minute!=0?$minute:'';
       $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i]);
-      $this->response['data'][$i]['date_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $this->response['data'][$i]['date_human'] = "$dayRes days ago";
       $i++;
     }
     return $this->response();
@@ -49,7 +49,7 @@ class VisitedPlaceController extends APIController
       $dayRes = $days!=0?$days:'';
       $hourRes = $hour!=0?$hour:$hour;
       $minRes =  $minute!=0?$minute:'';
-      $places[$j]['date_human'] = "$dayRes days, $hourRes h:$minRes min";;
+      $places[$j]['date_human'] = "$dayRes days ago";;
         $j++;
     }
     return $places;
