@@ -113,8 +113,6 @@ class TracingPlaceController extends APIController
 
     $i = 0;
     foreach ($confirmed_places as $coord) {
-      $confirmed_coord[$i]['lon'] = $coord['longitude'];
-      $confirmed_coord[$i]['lat'] = $coord['latitude'];
       $distance = TracingPlaceController::getDistance($lat, $lon, $coord['latitude'], $coord['longitude']);
       if ($distance < $radius) {
         $all_status[$i] = $coord['status'];
