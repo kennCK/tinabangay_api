@@ -15,6 +15,16 @@ class VisitedPlaceController extends APIController
 
   public function retrieve(Request $request){
     $data = $request->all();
+
+    $radius = env('RADIUS');
+    if (!isset($radius)) {
+      throw new \Exception('No env variable for "RADIUS"');
+    }
+
+    if (isset($data['radius'])) {
+      $radius = $data['radius'];
+    }
+
     $this->retrieveDB($data); // store to 
     $data = $this->response['data'];
     $i = 0;
@@ -30,8 +40,9 @@ class VisitedPlaceController extends APIController
       $dayRes = $days!=0?$days:'';
       $hourRes = $hour!=0?$hour:$hour;
       $minRes =  $minute!=0?$minute:'';
-      $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i]);
+      $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i], $radius);
       $this->response['data'][$i]['date_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $this->response['data'][$i]['radius'] = $radius;
       $i++;
     }
     return $this->response();
