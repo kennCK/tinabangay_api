@@ -42,8 +42,8 @@ class RideController extends APIController
         $fromTo = $this->checkRoute($key);
         $data[$i]['from_status'] = $fromTo['from'];
         $data[$i]['to_status'] = $fromTo['to']; // work on this later
-        $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
-        $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
       }else if($key['payload'] == 'qr'){
         $data[$i]['transportation'] = app($this->transportationClass)->getByParams('account_id', $key['owner']);
          $data[$i]['from_status'] = 'negative';// work on this later
