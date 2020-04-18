@@ -11,9 +11,7 @@ class PatientController extends APIController
   public $visitedPlacesClass = 'App\Http\Controllers\VisitedPlaceController';
   function __construct(){
     $this->model = new Patient();
-    $this->notRequired = array(
-      'remarks'
-    );
+    $this->notRequired = array('remarks', 'account_id', 'code', 'source');
   }
 
   public function retrieve(Request $request){
@@ -22,17 +20,9 @@ class PatientController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
-      $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['created_at'])->format("Y-m-d H:i:s"));
-        $days = $start_date->diffInDays($end_date);
-        $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-        $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-        $dayRes = $days!=0?$days:'';
-        $hourRes = $hour!=0?$hour:$hour;
-        $minRes =  $minute!=0?$minute:'';
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
-      $data[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -53,10 +43,13 @@ class PatientController extends APIController
 
   public function create(Request $request){
     $data = $request->all(); 
-    $accountId = $data['account_id'];
-    $newStatus = $data['status']; 
-    $previous = Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get();
-    if(sizeof($previous) > 0 && $previous[0]['status'] == $newStatus){
+    $accountId = isset($data['account_id']) ? $data['account_id'] : null;
+    $patientCode = isset($data['code']) ? $data['code'] : null;
+    $source = isset($data['source']) ? $data['source'] : null;
+    $newStatus = $data['status'];
+    $previousAccount = isset($accountId) ? Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get() : array();
+    $previousCode = isset($patientCode) ? Patient::where('code', '=', $patientCode)->orderBy('created_at', 'desc')->get() : array();
+    if(sizeof($previousAccount) > 0 && $previousAccount[0]['status'] == $newStatus || sizeof($previousCode) > 0 && $previousCode[0]['status'] == $newStatus){
       $this->response['data'] = null;
       $this->response['error'] = "Duplicate Entry!";
     }else{      
@@ -72,15 +65,7 @@ class PatientController extends APIController
     if(sizeof($result) > 0){
       $i = 0;
       foreach ($result as $key) {
-        $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $result[$i]['created_at'])->format("Y-m-d H:i:s"));
-        $days = $start_date->diffInDays($end_date);
-        $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-        $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-        $dayRes = $days!=0?$days:'';
-        $hourRes = $hour!=0?$hour:$hour;
-        $minRes =  $minute!=0?$minute:'';
-        $result[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+        $result[$i]['created_at_human'] =  $this->daysDiffDateTime($result[$i]['created_at']);
         $i++;
       }
     }

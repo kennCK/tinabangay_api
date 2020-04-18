@@ -47,12 +47,13 @@ class TemperatureController extends APIController
       $data[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);
       $location = TemperatureLocation::where('temperature_id', '=', $key['id'])->get();
       $data[$i]['temperature_location'] = sizeof($location) > 0 ? $location[0] : null;
-      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
     return $this->response();
   }
+  
   public function summary(Request $request){
     $data = $request->all();
     $temperatureLocation = DB::table('temperatures AS T1')
@@ -66,7 +67,7 @@ class TemperatureController extends APIController
     foreach ($temperatureLocation as $key) {
       $temperatureLocation[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);
       $temperatureLocation[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $temperatureLocation[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+      $temperatureLocation[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $temperatureLocation;
