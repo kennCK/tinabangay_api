@@ -112,33 +112,36 @@ class TracingPlaceController extends APIController
     $confirmed_places = json_decode($confirmed_places, true);
 
     $i = 0;
-    foreach ($confirmed_places as $coord) {
-      $distance = TracingPlaceController::getDistance($lat, $lon, $coord['latitude'], $coord['longitude']);
-      if ($distance < $radius) {
-        $all_status[$i] = $coord['status'];
-      } else {
-        $all_status[$i] = 'negative';
+    
+    if (!empty($confirmed_places)) {
+      foreach ($confirmed_places as $coord) {
+        $distance = TracingPlaceController::getDistance($lat, $lon, $coord['latitude'], $coord['longitude']);
+        if ($distance < $radius) {
+          $all_status[$i] = $coord['status'];
+        } else {
+          $all_status[$i] = 'negative';
+        }
+        $i++;
       }
-      $i++;
-    }
 
-    if (in_array('positive', $all_status)) {
-      return 'positive';
-    }
-    if (in_array('pui', $all_status)) {
-      return 'pui';
-    }
-    if (in_array('pum', $all_status)) {
-      return 'pum';
-    }
-    if (in_array('death', $all_status)) {
-      return 'death';
-    }
-    if (in_array('recovered', $all_status)) {
-      return 'recovered';
-    }
-    if (in_array('negative', $all_status)) {
-      return 'negative';
+      if (in_array('positive', $all_status)) {
+        return 'positive';
+      }
+      if (in_array('pui', $all_status)) {
+        return 'pui';
+      }
+      if (in_array('pum', $all_status)) {
+        return 'pum';
+      }
+      if (in_array('death', $all_status)) {
+        return 'death';
+      }
+      if (in_array('recovered', $all_status)) {
+        return 'recovered';
+      }
+      if (in_array('negative', $all_status)) {
+        return 'negative';
+      }
     }
 
     return 'negative';
