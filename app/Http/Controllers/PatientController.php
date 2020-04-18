@@ -20,17 +20,9 @@ class PatientController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
-      $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['created_at'])->format("Y-m-d H:i:s"));
-        $days = $start_date->diffInDays($end_date);
-        $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-        $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-        $dayRes = $days!=0?$days:'';
-        $hourRes = $hour!=0?$hour:$hour;
-        $minRes =  $minute!=0?$minute:'';
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
-      $data[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -73,15 +65,7 @@ class PatientController extends APIController
     if(sizeof($result) > 0){
       $i = 0;
       foreach ($result as $key) {
-        $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-        $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $result[$i]['created_at'])->format("Y-m-d H:i:s"));
-        $days = $start_date->diffInDays($end_date);
-        $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-        $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-        $dayRes = $days!=0?$days:'';
-        $hourRes = $hour!=0?$hour:$hour;
-        $minRes =  $minute!=0?$minute:'';
-        $result[$i]['created_at_human'] = "$dayRes days, $hourRes h:$minRes min";
+        $result[$i]['created_at_human'] =  $this->daysDiffDateTime($result[$i]['created_at']);
         $i++;
       }
     }
