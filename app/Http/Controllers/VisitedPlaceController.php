@@ -11,27 +11,32 @@ class VisitedPlaceController extends APIController
   
   function __construct(){
     $this->model = new VisitedPlace();
+    $this->notRequired = array(
+      'account_id',
+      'patient_id'
+    );
   }
 
   public function retrieve(Request $request){
     $data = $request->all();
+
+    $radius = env('RADIUS');
+    if (!isset($radius)) {
+      throw new \Exception('No env variable for "RADIUS"');
+    }
+
+    if (isset($data['radius'])) {
+      $radius = $data['radius'];
+    }
+
     $this->retrieveDB($data); // store to 
     $data = $this->response['data'];
     $i = 0;
     
     foreach ($data as $key) {
-      // $db_date = Carbon::createFromFormat('Y-m-d', $key['date'])->copy()->tz($this->response['timezone'])->format('Y-m-d');
-      // $curr_date = Carbon::now()->copy()->tz($this->response['timezone'])->format('Y-m-d');
-      $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-      $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['date'])->format("Y-m-d H:i:s"));
-      $days = $start_date->diffInDays($end_date);
-      $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-      $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-      $dayRes = $days!=0?$days:'';
-      $hourRes = $hour!=0?$hour:$hour;
-      $minRes =  $minute!=0?$minute:'';
-      $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i]);
-      $this->response['data'][$i]['date_human'] = "$dayRes days ago";
+      $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i], $radius);
+      $this->response['data'][$i]['date_human'] = $this->daysDiffByDate($key['date']);
+      $this->response['data'][$i]['radius'] = $radius;
       $i++;
     }
     return $this->response();
@@ -41,19 +46,9 @@ class VisitedPlaceController extends APIController
     $places = VisitedPlace::where($column, '=', $value)->get();
     $j = 0;
     foreach ($places as $key) {
-      $end_date = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
-      $start_date = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $key['date'])->format("Y-m-d H:i:s"));
-      $days = $start_date->diffInDays($end_date);
-      $hour = $start_date->copy()->addDays($days)->diffInHours($end_date);
-      $minute = $end_date->copy()->addDays($days)->addHours($hour)->diffInMinutes($end_date);
-      $dayRes = $days!=0?$days:'';
-      $hourRes = $hour!=0?$hour:$hour;
-      $minRes =  $minute!=0?$minute:'';
-      $places[$j]['date_human'] = "$dayRes days ago";;
+      $places[$j]['date_human'] = $this->daysDiffByDate($key['date']);
         $j++;
     }
     return $places;
   }
-
-
 }

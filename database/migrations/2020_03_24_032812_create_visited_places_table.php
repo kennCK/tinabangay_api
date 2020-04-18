@@ -15,7 +15,7 @@ class CreateVisitedPlacesTable extends Migration
     {
         Schema::create('visited_places', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('account_id');
+            $table->bigInteger('patient_id');
             $table->string('longitude');
             $table->string('latitude');
             $table->string('route');

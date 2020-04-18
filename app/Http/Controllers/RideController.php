@@ -25,7 +25,7 @@ class RideController extends APIController
       'code'
     );
   }
-
+  
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);
@@ -33,14 +33,14 @@ class RideController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       // Days, hour , Min time format
-      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
         $fromTo = $this->checkRoute($key);
         $data[$i]['from_status'] = $fromTo['from'];
         $data[$i]['to_status'] = $fromTo['to']; // work on this later
-        $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
-        $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s',  $data[$i]['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        $data[$i]['from_date_human'] = $this->daysDiffDateTime($data[$i]['from_date_time']);
+        $data[$i]['to_date_human'] = $this->daysDiffDateTime($data[$i]['to_date_time']);
       }else if($key['payload'] == 'qr'){
         $data[$i]['transportation'] = app($this->transportationClass)->getByParams('account_id', $key['owner']);
          $data[$i]['from_status'] = 'negative';// work on this later
