@@ -18,6 +18,7 @@ class CreatePatientsTable extends Migration
             $table->bigInteger('account_id');
             $table->bigInteger('added_by');
             $table->string('status');
+            $table->string('source')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
