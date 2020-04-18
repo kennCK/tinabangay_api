@@ -18,26 +18,37 @@ class TracingPlaceController extends APIController
     }
     $data = $request->all();
     $positiveUser = DB::table('visited_places AS T1')
-      ->join('patients AS T2','T2.account_id','=','T1.account_id')
+      ->join('patients AS T2', function($join){
+          $join->on('T1.account_id', '=', 'T2.account_id')->whereNotNull('T1.account_id')
+          ->orOn('T1.patient_id', '=', 'T2.id')->whereNotNull('T1.patient_id');
+       })
       ->where('T2.status','=',$data['status'])
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
-      ->select('T1.*')
+      ->select(['T1.*', 'T2.status'])
       ->get();
-    $positiveUser = $positiveUser->groupBy('route');
+    $positiveUser = $positiveUser->groupBy(['route']);
+    // $this->response['data'] = $positiveUser;
+    // return $this->response();
     $array = array();
     foreach ($positiveUser as $key => $value) {
-      $groupByAccount = $value->groupBy('account_id');
+      $groupByAccount = $value->groupBy(['account_id', 'patient_id']);
       $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->where('account_id', '!=',  $positiveUser->id)->get();
+      $visitedPlaces = VisitedPlace::where('route', '=', $key)->get();
       $pui = 0;
       $pum = 0;
-      $positive = count($groupByAccount);
+      $positive = $this->getTotal($groupByAccount);
       $negative = 0;
       $death = 0;
       $recovered = 0;
       foreach ($visitedPlaces as $keyVisitedPlaces) {
-        $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+        $patient = null;
+        if($keyVisitedPlaces->account_id > 0){
+          $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
+        }else if($keyVisitedPlaces->patient_id > 0){
+          $patient = Patient::where('id', '=', $keyVisitedPlaces->patient_id)->orderBy('created_at', 'desc')->first();
+        }
+        
         if($patient){
           switch ($patient->status) {
             case 'pui':
@@ -85,6 +96,18 @@ class TracingPlaceController extends APIController
      // }
      $this->response['data'] = $array;
      return $this->response();
+  }
+
+  public function getTotal($result){
+    $counter = 0;
+    foreach ($result as $key => $value) {
+      if(intval($key) > 0){
+        $counter++;
+      }else{
+        $counter += count($value);
+      }
+    }
+    return $counter;
   }
 
   public function getDistance($lat1, $lon1, $lat2, $lon2) {  
