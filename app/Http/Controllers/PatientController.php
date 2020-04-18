@@ -11,9 +11,7 @@ class PatientController extends APIController
   public $visitedPlacesClass = 'App\Http\Controllers\VisitedPlaceController';
   function __construct(){
     $this->model = new Patient();
-    $this->notRequired = array(
-      'remarks'
-    );
+    $this->notRequired = array('remarks', 'account_id', 'code', 'source');
   }
 
   public function retrieve(Request $request){
@@ -53,10 +51,13 @@ class PatientController extends APIController
 
   public function create(Request $request){
     $data = $request->all(); 
-    $accountId = $data['account_id'];
-    $newStatus = $data['status']; 
-    $previous = Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get();
-    if(sizeof($previous) > 0 && $previous[0]['status'] == $newStatus){
+    $accountId = isset($data['account_id']) ? $data['account_id'] : null;
+    $patientCode = isset($data['code']) ? $data['code'] : null;
+    $source = isset($data['source']) ? $data['source'] : null;
+    $newStatus = $data['status'];
+    $previousAccount = isset($accountId) ? Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get() : array();
+    $previousCode = isset($patientCode) ? Patient::where('code', '=', $patientCode)->orderBy('created_at', 'desc')->get() : array();
+    if(sizeof($previousAccount) > 0 && $previousAccount[0]['status'] == $newStatus || sizeof($previousCode) > 0 && $previousCode[0]['status'] == $newStatus){
       $this->response['data'] = null;
       $this->response['error'] = "Duplicate Entry!";
     }else{      
