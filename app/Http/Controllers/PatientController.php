@@ -21,7 +21,7 @@ class PatientController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
+      $data[$i]['places'] = isset($key['account_id']) ? app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']) : app($this->visitedPlacesClass)->getByParams('patient_id', $key['id']);
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
