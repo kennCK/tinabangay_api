@@ -11,6 +11,10 @@ class VisitedPlaceController extends APIController
   
   function __construct(){
     $this->model = new VisitedPlace();
+    $this->notRequired = array(
+      'account_id',
+      'patient_id'
+    );
   }
 
   public function retrieve(Request $request){
