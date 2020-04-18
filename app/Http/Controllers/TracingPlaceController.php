@@ -7,6 +7,8 @@ use App\Patient;
 use Illuminate\Support\Facades\DB;
 class TracingPlaceController extends APIController
 {
+  public $existAccount = [];
+  public $existPatient = [];
   public function places(Request $request){
     $isPaginate = false;
     $page_start = 0;
@@ -33,82 +35,119 @@ class TracingPlaceController extends APIController
     $array = array();
     foreach ($positiveUser as $key => $value) {
       $groupByAccount = $value->groupBy(['account_id', 'patient_id']);
-      $place = VisitedPlace::where('route', '=', $key)->first();
-      $visitedPlaces = VisitedPlace::where('route', '=', $key)->get();
+      $positive = $this->getTotal($groupByAccount);
+      // $this->response['data'] = $groupByAccount;
+      // return $this->response();
+      $place = VisitedPlace::where('id', '=', $value[0]->id)->first();
+      $visitedPlaces = null;
+      if(sizeof($this->existAccount) > 0 && sizeof($this->existPatient) > 0){
+        $visitedPlaces = VisitedPlace::where('route', '=', $key)
+        ->whereNotIn('account_id', $this->existAccount)
+        ->orWhereNotIn('patient_id', $this->existPatient)
+        ->get();
+      }else if(sizeof($this->existAccount) > 0){
+        $visitedPlaces = VisitedPlace::where('route', '=', $key)
+        ->whereNotIn('account_id', $this->existAccount)
+        ->get();
+      }else if(sizeof($this->existPatient) > 0){
+        $visitedPlaces = VisitedPlace::where('route', '=', $key)
+        ->whereNotIn('patient_id', $this->existPatient)
+        ->get();
+      }
+      
       $pui = 0;
       $pum = 0;
-      $positive = $this->getTotal($groupByAccount);
       $negative = 0;
       $death = 0;
       $recovered = 0;
-      foreach ($visitedPlaces as $keyVisitedPlaces) {
+      $visitedPlacesGroup =  $visitedPlaces->groupBy(['account_id', 'patient_id']);
+      foreach ($visitedPlacesGroup as $keyVisitedPlaces => $valuesVisitedPlaces) {
         $patient = null;
-        if($keyVisitedPlaces->account_id > 0){
-          $patient = Patient::where('account_id', '=', $keyVisitedPlaces->account_id)->orderBy('created_at', 'desc')->first();
-        }else if($keyVisitedPlaces->patient_id > 0){
-          $patient = Patient::where('id', '=', $keyVisitedPlaces->patient_id)->orderBy('created_at', 'desc')->first();
-        }
-        
-        if($patient){
-          switch ($patient->status) {
-            case 'pui':
-              $pui++;
-              break;
-            case 'pum':
-              $pum++;
-              break; 
-            case 'negative':
-              $negative++;
-              break; 
-            case 'recovered':
-              $recovered++;
-            case 'death':
-              $death++;
-              break; 
-          }
+        if(intval($keyVisitedPlaces) > 0){
+          $patient = Patient::where('account_id', '=', $keyVisitedPlaces)->orderBy('created_at', 'desc')->first();
+          if($patient){
+            switch ($patient->status) {
+              case 'pui':
+                $pui++;
+                break;
+              case 'pum':
+                $pum++;
+                break; 
+              case 'negative':
+                $negative++;
+                break; 
+              case 'recovered':
+                $recovered++;
+              case 'death':
+                $death++;
+                break; 
+            }
           }else{
             $negative++;
           }
+        }else{
+          foreach ($valuesVisitedPlaces as $keyValue) {
+            $patient = Patient::where('id', '=', $keyValue[0]->patient_id)->orderBy('created_at', 'desc')->first();
+            if($patient){
+              switch ($patient->status) {
+                case 'pui':
+                  $pui++;
+                  break;
+                case 'pum':
+                  $pum++;
+                  break; 
+                case 'negative':
+                  $negative++;
+                  break; 
+                case 'recovered':
+                  $recovered++;
+                case 'death':
+                  $death++;
+                  break; 
+              }
+            }else{
+              $negative++;
+            }
+          }
         }
-        $place['size'] = sizeof($visitedPlaces);
-        $place['positive_size'] = $positive;
-        $place['pui_size'] = $pui;
-        $place['pum_size'] = $pum;
-        $place['negative_size'] = $negative;
-        $place['death_size'] = $death;
-        $place['recovered_size'] = $recovered;
-        $array[] = $place;
       }
-      // $keys = array_column($array, 'positive_size');
-      // array_multisort($keys, SORT_DESC, $array);
-      // $this->response['data'] = $array;
-      // return $this->response();
-      $keys = array_column($array, 'positive_size');
-      array_multisort($keys, SORT_DESC, $array);
-     //  if ($isPaginate ==  true) {
-     //  $start = ($page_start > count($array)) ? 0 : $page_start ;
-     //  $end = ($page_end > count($array)) ? count($array) : $page_end ;
-     //   $paged_array = array();
-     //  for ($i = $start; $i < $end ; $i++) { 
-     //     array_push($paged_array, $array[$i]);
-     //  }
-     //  $array = $paged_array; 
-     // }
-     $this->response['data'] = $array;
-     return $this->response();
+        
+      $place['size'] = sizeof($visitedPlaces);
+      $place['positive_size'] = $positive;
+      $place['pui_size'] = $pui;
+      $place['pum_size'] = $pum;
+      $place['negative_size'] = $negative;
+      $place['death_size'] = $death;
+      $place['recovered_size'] = $recovered;
+      // $place['visitedPlacesGroup'] = $visitedPlacesGroup;
+      // $place['existing_account'] = $this->existAccount;
+      // $place['existing_patient'] = $this->existPatient;
+      $array[] = $place;
+    }
+    $keys = array_column($array, 'positive_size');
+    array_multisort($keys, SORT_DESC, $array);
+    $this->response['data'] = $array;
+    return $this->response();
   }
 
   public function getTotal($result){
     $counter = 0;
+    $this->existAccount = [];
+    $this->existPatient = [];
     foreach ($result as $key => $value) {
       if(intval($key) > 0){
+        $this->existAccount[] = $key;
         $counter++;
       }else{
         $counter += count($value);
+        foreach ($value as $keyValue) {
+          $this->existPatient[] = $keyValue[0]->patient_id;
+        }
       }
     }
     return $counter;
   }
+
 
   public function getDistance($lat1, $lon1, $lat2, $lon2) {  
     $earth_radius_in_km = 6371;
