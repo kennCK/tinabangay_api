@@ -25,7 +25,7 @@ class RideController extends APIController
       'code'
     );
   }
-
+  
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);

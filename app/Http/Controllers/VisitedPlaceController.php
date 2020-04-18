@@ -47,6 +47,4 @@ class VisitedPlaceController extends APIController
     }
     return $places;
   }
-
-
 }
