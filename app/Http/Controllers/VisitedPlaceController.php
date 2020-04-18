@@ -31,7 +31,7 @@ class VisitedPlaceController extends APIController
     
     foreach ($data as $key) {
       $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i], $radius);
-      $this->response['data'][$i]['date_human'] = $this->daysDiff($key['date']);
+      $this->response['data'][$i]['date_human'] = $this->daysDiffByDate($key['date']);
       $this->response['data'][$i]['radius'] = $radius;
       $i++;
     }
@@ -42,7 +42,7 @@ class VisitedPlaceController extends APIController
     $places = VisitedPlace::where($column, '=', $value)->get();
     $j = 0;
     foreach ($places as $key) {
-      $places[$j]['date_human'] = $this->daysDiff($key['date']);
+      $places[$j]['date_human'] = $this->daysDiffByDate($key['date']);
         $j++;
     }
     return $places;

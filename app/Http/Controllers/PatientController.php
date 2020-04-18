@@ -24,7 +24,7 @@ class PatientController extends APIController
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
-      $data[$i]['created_at_human'] = $this->daysDiff($key['created_at']);
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -64,7 +64,7 @@ class PatientController extends APIController
     if(sizeof($result) > 0){
       $i = 0;
       foreach ($result as $key) {
-        $result[$i]['created_at_human'] =  $this->daysDiff($result[$i]['created_at']);
+        $result[$i]['created_at_human'] =  $this->daysDiffDateTime($result[$i]['created_at']);
         $i++;
       }
     }

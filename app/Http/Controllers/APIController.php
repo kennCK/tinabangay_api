@@ -601,7 +601,20 @@ class APIController extends Controller
     return $result;
   }
 
-  public function daysDiff($date){
+  public function daysDiffDateTime($date){
+    $currentDate = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
+    $givenDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $date)->tz($this->response['timezone'])->format("Y-m-d H:i:s"));
+    $days = $givenDate->diffInDays($currentDate);
+    if($days > 1){
+      return $days .' Days Ago';
+    }else if($days == 1){
+      return 'Yesterday';
+    }else{
+      return 'Today';
+    }
+  }
+
+  public function daysDiffByDate($date){
     $currentDate = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
     $givenDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $date)->tz($this->response['timezone'])->format("Y-m-d H:i:s"));
     $days = $givenDate->diffInDays($currentDate);

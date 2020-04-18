@@ -47,7 +47,7 @@ class TemperatureController extends APIController
       $data[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);
       $location = TemperatureLocation::where('temperature_id', '=', $key['id'])->get();
       $data[$i]['temperature_location'] = sizeof($location) > 0 ? $location[0] : null;
-      $data[$i]['created_at_human'] = $this->daysDiff($key['created_at']);
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -67,7 +67,7 @@ class TemperatureController extends APIController
     foreach ($temperatureLocation as $key) {
       $temperatureLocation[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);
       $temperatureLocation[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $temperatureLocation[$i]['created_at_human'] = $this->daysDiff($key['created_at']);
+      $temperatureLocation[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $temperatureLocation;
