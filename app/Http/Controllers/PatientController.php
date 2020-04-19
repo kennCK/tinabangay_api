@@ -31,7 +31,7 @@ class PatientController extends APIController
       $i++;
     }
     $this->response['data'] = $data;
-    $this->response['size'] = Patient::where('deleted_at', '!', null)->count();
+    $this->response['size'] = Patient::where('deleted_at', '=', null)->count();
     return $this->response();
   }
 
