@@ -32,13 +32,12 @@ class RideController extends APIController
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
-      // Days, hour , Min time format
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
       if($key['payload'] == 'manual'){
         $data[$i]['transportation'] = null;
-        $fromTo = $this->checkRoute($key);
-        $data[$i]['from_status'] = $fromTo['from'];
-        $data[$i]['to_status'] = $fromTo['to']; // work on this later
+        $route_status = $this->checkRoute($key);
+        $data[$i]['from_status'] = $route_status['from'];
+        $data[$i]['to_status'] = $route_status['to'];
         $data[$i]['from_date_human'] = $this->daysDiffDateTime($data[$i]['from_date_time']);
         $data[$i]['to_date_human'] = $this->daysDiffDateTime($data[$i]['to_date_time']);
       }else if($key['payload'] == 'qr'){
@@ -62,7 +61,7 @@ class RideController extends APIController
       ->get();
     $rides_status = json_decode($rides_status,true);
     foreach ($rides_status as $key => $value) {
-      if (array_search($value['status'], $possibleStatus)<array_search($retVal, $possibleStatus)){
+      if (array_search($value['status'], $possibleStatus) < array_search($retVal, $possibleStatus)){
         $retVal = $value['status'];
       }
     }
