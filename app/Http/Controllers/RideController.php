@@ -51,6 +51,7 @@ class RideController extends APIController
     $this->response['data'] = $data;
     return $this->response();
   }
+
   public function checkQrRoute($route){
     $retVal = 'negative';
     $possibleStatus = array('death','positive','pum','pui','negative');
@@ -67,6 +68,7 @@ class RideController extends APIController
     }
     return $retVal;
   }
+  
   public function checkRoute($route){
     $retVal = array('from'=>'negative','to'=>'negative');
     $possibleStatus = array('death','positive','pum','pui','negative');
