@@ -43,13 +43,30 @@ class RideController extends APIController
         $data[$i]['to_date_human'] = $this->daysDiffDateTime($data[$i]['to_date_time']);
       }else if($key['payload'] == 'qr'){
         $data[$i]['transportation'] = app($this->transportationClass)->getByParams('account_id', $key['owner']);
-         $data[$i]['from_status'] = 'negative';// work on this later
-        $data[$i]['to_status'] = 'negative'; // work on this later
+        $route_status = $this->checkQrRoute($key);
+        $data[$i]['from_status'] = $route_status;
+        $data[$i]['to_status'] = $route_status;
       }
       $i++;
     }
     $this->response['data'] = $data;
     return $this->response();
+  }
+  public function checkQrRoute($route){
+    $retVal = 'negative';
+    $possibleStatus = array('death','positive','pum','pui','negative');
+    $rides_status = DB::table('rides AS T1')
+      ->join("patients AS T2","T1.account_id",'=','T2.account_id')
+      ->whereIn('T1.transportation_id', [$route['transportation_id']])
+      ->select(['T2.status AS status'])
+      ->get();
+    $rides_status = json_decode($rides_status,true);
+    foreach ($rides_status as $key => $value) {
+      if (array_search($value['status'], $possibleStatus)<array_search($retVal, $possibleStatus)){
+        $retVal = $value['status'];
+      }
+    }
+    return $retVal;
   }
   public function checkRoute($route){
     $retVal = array('from'=>'negative','to'=>'negative');
