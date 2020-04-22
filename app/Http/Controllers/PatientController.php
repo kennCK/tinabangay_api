@@ -14,6 +14,63 @@ class PatientController extends APIController
     $this->notRequired = array('remarks', 'account_id', 'code', 'source');
   }
 
+  public function linking(Request $request){
+    $data = $request->all();
+    // $this->response['data'] = $data;
+    // return $this->response();
+    if(sizeof($data['entries']) > 0){
+      foreach ($data['entries'] as $key) {
+        $previousCode = Patient::where('code', '=', $key['code'])->orderBy('created_at', 'desc')->get();
+        
+        $this->response['data'] = null;
+        $this->response['error'] = null;
+        $this->response['code'] =  null;
+        
+        if(sizeof($previousCode) > 0){
+          $this->response['data'] = null;
+          $this->response['error'] = "Duplicate Entry!";
+          $this->response['code'] =  $key['code'];
+          return $this->response();
+        }
+
+        $this->model = new Patient();
+        
+        $patientData = array(
+          'added_by'  => 1,
+          'code'      => $key['code'],
+          'remarks'   => $key['remarks'],
+          'source'    => $key['source'],
+          'status'    => $key['status'],
+          'created_at'  => Carbon::now()
+        );
+
+        $this->insertDB($patientData);
+
+        if($this->response['data'] > 0){
+          $visitedPlacesData = array(
+            'patient_id'  => $this->response['data'],
+            'account_id'  => null,
+            'route'       => $key['route'],
+            'locality'    => $key['locality'],
+            'region'      => $key['region'],
+            'country'     => $key['country'],
+            'longitude'   => $key['longitude'],
+            'latitude'    => $key['latitude'],
+            'date'        => $key['date'],
+            'time'        => $key['time'],
+            'created_at'  => Carbon::now()
+          );
+          VisitedPlace::insert($visitedPlacesData);
+        }
+      }
+    }else{
+      $this->response['data'] = null;
+      $this->response['error'] = 'Empty Entries';
+      $this->response['code'] =  null;
+    }
+    return $this->response();
+  }
+
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data); 
@@ -21,11 +78,17 @@ class PatientController extends APIController
     $data = $this->response['data'];
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $data[$i]['places'] = isset($key['account_id']) ? app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']) : app($this->visitedPlacesClass)->getByParams('patient_id', $key['id']);
+      if($key['account_id'] > 0){
+        $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('account_id', $key['account_id']);
+      }else{
+        $data[$i]['places'] = app($this->visitedPlacesClass)->getByParams('patient_id', $key['id']);
+      }
+      
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;
     }
     $this->response['data'] = $data;
+    $this->response['size'] = Patient::where('deleted_at', '=', null)->count();
     return $this->response();
   }
 

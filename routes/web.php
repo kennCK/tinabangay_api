@@ -147,6 +147,7 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/patients/';
 $controller = 'PatientController@';
 Route::post($route.'create', $controller."create");
+Route::post($route.'linking', $controller."linking");
 Route::post($route.'retrieve', $controller."retrieve");
 Route::post($route.'retrieve_notifications', $controller."retrieveNotifications");
 Route::post($route.'summary', $controller."summary");
