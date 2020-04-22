@@ -217,3 +217,7 @@ Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
 
+//GoogleSheetController Controller
+$route = env('PACKAGE_ROUTE', '').'/exports/';
+$controller = 'GoogleSheetController@';
+Route::post($route.'patients', $controller.'patients');
