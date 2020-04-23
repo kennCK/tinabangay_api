@@ -16,52 +16,59 @@ class PatientController extends APIController
 
   public function linking(Request $request){
     $data = $request->all();
-    // $this->response['data'] = $data;
-    // return $this->response();
     if(sizeof($data['entries']) > 0){
       foreach ($data['entries'] as $key) {
-        $previousCode = Patient::where('code', '=', $key['code'])->orderBy('created_at', 'desc')->get();
-        
+        $this->model = new Patient();
         $this->response['data'] = null;
         $this->response['error'] = null;
         $this->response['code'] =  null;
-        
-        if(sizeof($previousCode) > 0){
-          $this->response['data'] = null;
-          $this->response['error'] = "Duplicate Entry!";
-          $this->response['code'] =  $key['code'];
-          return $this->response();
-        }
 
-        $this->model = new Patient();
-        
-        $patientData = array(
-          'added_by'  => 1,
-          'code'      => $key['code'],
-          'remarks'   => $key['remarks'],
-          'source'    => $key['source'],
-          'status'    => $key['status'],
-          'created_at'  => Carbon::now()
+        $visitedPlacesData = array(
+          'route'       => $key['route'],
+          'locality'    => $key['locality'],
+          'region'      => $key['region'],
+          'country'     => $key['country'],
+          'longitude'   => $key['longitude'],
+          'latitude'    => $key['latitude'],
+          'date'        => $key['date'], 
+          'time'        => $key['time'],
         );
 
-        $this->insertDB($patientData);
-
-        if($this->response['data'] > 0){
-          $visitedPlacesData = array(
-            'patient_id'  => $this->response['data'],
-            'account_id'  => null,
-            'route'       => $key['route'],
-            'locality'    => $key['locality'],
-            'region'      => $key['region'],
-            'country'     => $key['country'],
-            'longitude'   => $key['longitude'],
-            'latitude'    => $key['latitude'],
-            'date'        => $key['date'],
-            'time'        => $key['time'],
+        $previousCode = Patient::where('code', '=', $key['code'])->orderBy('created_at', 'desc')->get();
+        if (sizeof($previousCode) > 0) { 
+          /**
+           * if patient exists -> update
+           */
+          $patientData = array(
+            'added_by'  => 1,
+            'remarks'   => $key['remarks'],
+            'source'    => $key['source'],
+            'status'    => $key['status'],
+            'updated_at'  => Carbon::now()
+          );
+          $visitedPlacesData['updated_at'] = Carbon::now();
+          Patient::where('code', '=', $key['code'])->update($patientData);
+          VisitedPlace::where('patient_id', '=', $previousCode[0]['id'])->update($visitedPlacesData);
+        } else {
+          /**
+           * if new patient -> insert
+           */
+          $patientData = array(
+            'added_by'  => 1,
+            'code'      => $key['code'],
+            'remarks'   => $key['remarks'],
+            'source'    => $key['source'],
+            'status'    => $key['status'],
             'created_at'  => Carbon::now()
           );
-          VisitedPlace::insert($visitedPlacesData);
-        }
+          $this->insertDB($patientData);
+          if ($this->response['data'] > 0) {    
+            $visitedPlacesData['patient_id'] = $this->response['data'];
+            $visitedPlacesData['account_id'] = null;
+            $visitedPlacesData['created_at'] = Carbon::now();
+            VisitedPlace::insert($visitedPlacesData);
+          }
+        }                
       }
     }else{
       $this->response['data'] = null;
