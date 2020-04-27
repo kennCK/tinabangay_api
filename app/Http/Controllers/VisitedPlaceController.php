@@ -8,6 +8,7 @@ use Carbon\Carbon;
 class VisitedPlaceController extends APIController
 {
   public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
+  public $patientController = 'App\Http\Controllers\PatientController';
   
   function __construct(){
     $this->model = new VisitedPlace();
@@ -36,7 +37,18 @@ class VisitedPlaceController extends APIController
     $i = 0;
     
     foreach ($data as $key) {
-      $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i], $radius);
+      if($key['patiend_id'] != null){
+        // get status
+        $this->response['data'][$i]['status'] = app($this->patientController)->getStatusByParams('id', intval($key['patiend_id']));
+      }else{
+        $status = app($this->patientController)->getStatusByParams('id', intval($key['account_id']));
+        if($status){
+          $this->response['data'][$i]['status'] = $status;
+        }else{
+          $this->response['data'][$i]['status'] = app($this->tracingPlaceController)->getStatus($data[$i], $radius); 
+        }
+      }
+      
       $this->response['data'][$i]['date_human'] = isset($key['date']) ? $this->daysDiffByDate($key['date']) : null;
       $this->response['data'][$i]['radius'] = $radius;
       $i++;

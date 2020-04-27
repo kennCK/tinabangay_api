@@ -142,4 +142,9 @@ class PatientController extends APIController
     $this->response['data'] = $result;
     return $this->response();
   }
+
+  public function getStatusByParams($column, $value){
+    $result = Patient::where($column, $value)->get();
+    return sizeof($result) > 0 ? 'P_'.$result[0]['status'] : null;
+  }
 }
