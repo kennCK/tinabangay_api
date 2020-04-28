@@ -14,8 +14,7 @@ class UpdateVisitedPlacesTableAddPatientId extends Migration
     public function up()
     {
         Schema::table('visited_places', function (Blueprint $table) {
-            $table->bigInteger('patient_id')->after('id')->nullable();
-            $table->bigInteger('account_id')->nullable()->change();
+            $table->bigInteger('account_id')->after('id')->nullable();
         });
     }
 
