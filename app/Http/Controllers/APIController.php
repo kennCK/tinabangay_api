@@ -428,8 +428,12 @@ class APIController extends Controller
         $condition["clause"] = (isset($condition["clause"])) ? $condition["clause"] : "=";
         $condition["value"] = (isset($condition["value"])) ? $condition["value"] : null;
         switch($condition["clause"]){
+          case 'or':
+            $this->model = $this->model->orWhere($condition["column"], '=', $condition["value"]);
+            break;
           default :
             $this->model = $this->model->where($condition["column"], $condition["clause"], $condition["value"]);
+            break;
         }
       }
     }
