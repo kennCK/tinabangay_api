@@ -54,6 +54,30 @@ class TemperatureController extends APIController
     return $this->response();
   }
   
+  public function retrieveTracing(Request $request){
+    $data = $request->all();
+    $temperatures = DB::table('temperatures AS T1')
+      ->join('locations AS T2', 'T2.account_id', '=', 'T1.account_id')
+      ->where('T2.locality', 'like', $data['locality'])
+      ->where('T2.region', 'like', $data['region'])
+      ->where('T2.country', 'like', $data['country'])
+      ->where('T1.value','>=', $data['temperature'])
+      ->whereNull('T2.deleted_at')
+      ->whereNull('T1.deleted_at')
+      ->orderBy('T1.'.$data['sort']['column'], $data['sort']['value'])
+      ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region'])
+      ->get();
+    $results = json_decode($temperatures, true);
+    $i = 0;
+    foreach ($results as $key) {
+      $results[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
+      $results[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
+      $i++;
+    }
+    $this->response['data'] = $results;
+    return $this->response();
+  }
+
   public function summary(Request $request){
     $data = $request->all();
     $temperatureLocation = DB::table('temperatures AS T1')
@@ -62,7 +86,7 @@ class TemperatureController extends APIController
       ->where('T1.value','>=',$data['temperature'])
       ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region'])
       ->get();
-    $temperatureLocation = json_decode($temperatureLocation,true);
+    $temperatureLocation = json_decode($temperatureLocation, true);
     $i = 0;
     foreach ($temperatureLocation as $key) {
       $temperatureLocation[$i]['added_by_account'] = $this->retrieveAccountDetails($key['added_by']);

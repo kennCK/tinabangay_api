@@ -41,21 +41,21 @@ class APIController extends Controller
   );
 
   protected $whiteListedDomain = array(
-    'https://payhiram.ph/',
-    'https://www.payhiram.ph/',
-    'http://www.payhiram.ph/',
-    'http://payhiram.ph/',
+    'https://traceag.com.au/',
+    'https://www.traceag.com.au/',
+    'http://www.traceag.com.au/',
+    'http://traceag.com.au/',
     'http://localhost:8001/',
-    'com.payhiram'
+    'com.agricord'
   );
 
   protected $whiteListedDomainOrigin = array(
-    'https://payhiram.ph',
-    'https://www.payhiram.ph',
-    'http://www.payhiram.ph',
-    'http://payhiram.ph',
-    'com.payhiram',
-    'http://localhost:8001'
+    'https://traceag.com.au/',
+    'https://www.traceag.com.au/',
+    'http://www.traceag.com.au/',
+    'http://traceag.com.au/',
+    'http://localhost:8001/',
+    'com.agricord'
   );
 
   protected $notRequired = array();
