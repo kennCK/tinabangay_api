@@ -80,7 +80,7 @@ class VisitedPlaceController extends APIController
         $this->response['data'][$i]['status'] = $status;
         $this->response['data'][$i]['status_label'] = $status;
       }else{
-        $status = app($this->patientController)->getStatusByParams('id', intval($key['account_id']));
+        $status = app($this->patientController)->getStatusByParams('account_id', intval($key['account_id']));
         if($status){
           $this->response['data'][$i]['status'] = $status;
           $this->response['data'][$i]['status_label'] = $status;
