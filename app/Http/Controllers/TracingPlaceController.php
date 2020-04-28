@@ -171,6 +171,8 @@ class TracingPlaceController extends APIController
           $join->on('T1.account_id', '=', 'T2.account_id')->whereNotNull('T1.account_id')
           ->orOn('T1.patient_id', '=', 'T2.id')->whereNotNull('T1.patient_id');
        })
+      ->where('T1.locality', 'like', '%'.$location['locality'].'%')
+      ->where('T1.region', 'like', '%'.$location['region'].'%')
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->select(['T1.*', 'T2.status'])->get();
