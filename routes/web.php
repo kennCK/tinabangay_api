@@ -120,6 +120,7 @@ $route = env('PACKAGE_ROUTE', '').'/temperatures/';
 $controller = 'TemperatureController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'summary', $controller."summary");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
@@ -139,6 +140,7 @@ $route = env('PACKAGE_ROUTE', '').'/visited_places/';
 $controller = 'VisitedPlaceController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
@@ -167,10 +169,6 @@ $route = env('PACKAGE_ROUTE', '').'/tracing_places/';
 $controller = 'TracingPlaceController@';
 Route::post($route.'places', $controller."places");
 
-//Rides Controller
-$route = env('PACKAGE_ROUTE', '').'/rides/';
-$controller = 'RideController@';
-
 //Google Places Controller
 $route = env('PACKAGE_ROUTE', '').'/google_places/';
 $controller = 'GooglePlaceController@';
@@ -181,6 +179,7 @@ $route = env('PACKAGE_ROUTE', '').'/transportations/';
 $controller = 'TransportationController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
@@ -194,7 +193,7 @@ Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
 
-//Ride History Controller
+//Ride Controller
 $route = env('PACKAGE_ROUTE', '').'/rides/';
 $controller = 'RideController@';
 Route::post($route.'create', $controller."create");
