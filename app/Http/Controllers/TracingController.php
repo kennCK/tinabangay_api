@@ -74,4 +74,11 @@ class TracingController extends APIController
       );
       return $this->response();
     }
+
+    public function getStatusByAccountId($accountId){
+      return array(
+        'status' => 'negative',
+        'status_label' => 'IN CONTACT WITH NEGATIVE LAST 14 DAYS'
+      );
+    }
 }
