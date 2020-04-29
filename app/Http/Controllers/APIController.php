@@ -602,6 +602,7 @@ class APIController extends Controller
     $result['notification_settings'] = app('App\Http\Controllers\NotificationSettingController')->getNotificationSettings($accountId);
     $result['sub_account'] = app('Increment\Account\Http\SubAccountController')->retrieveByParams('member', $accountId);
     $result['transportation'] = app('App\Http\Controllers\TransportationController')->getByParams('account_id', $accountId);
+    $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($accountId);
     return $result;
   }
 
