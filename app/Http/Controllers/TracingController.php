@@ -71,8 +71,20 @@ class TracingController extends APIController
     }
 
     public function getStatus(Request $request){
+      $data = $request->all();
+      $accountId = $data['id'];
+      $status = $this->getStatusByAccountId($accountId);
+      $this->response['data'] = array(
+        'status' => $status['status'],
+        'status_from' => $status['status_from'],
+        'status_label' => $status['status_label']
+      );
+      return $this->response();
+    }
+
+    public function getStatusByAccountId($accountId){
       /**
-       * PRIORITY: patient > visited places > transportation > temperature
+       * PRIORITY LEVEL: patient > visited places > transportation > temperature
        */
       $radius = env('RADIUS');
       $specified_days = env('SPECIFIED_DAYS');
@@ -80,9 +92,10 @@ class TracingController extends APIController
         throw new \Exception('No env variable for "RADIUS" or "SPECIFIED_DAYS');
       }
 
+      /**
+       * Initialize status for all params
+       */
       $priorityStatus = array('death','positive','pui','pum','negative');
-      $data = $request->all();
-      $accountId = $data['id'];
       $statuses = array(
         'patient' => 'negative',
         'visited_places' => 'negative',
@@ -90,23 +103,27 @@ class TracingController extends APIController
         'temperature' => 'negative'
       );
       
+      /**
+       * Fetch records for all params
+       */
       $now = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
       $patientRecord = Patient::where('account_id', '=', $accountId)->first();
       $visitedPlacesRecord = VisitedPlace::where('account_id', '=', $accountId)->get();
       $transportationRecord = Ride::where('account_id', '=', $accountId)->where('payload', '=', 'qr')->get();
+      $temperatureRecord = Temperature::where('account_id', '=', $accountId)->get();
 
       if ($patientRecord !== null) {
         /**
-         * Check status for patient if exist
+         * Check status for patient (if exist)
          */
         $patientRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $patientRecord->created_at)->format("Y-m-d H:i:s"));
         $daysAgo = $patientRecordDate->diffInDays($now);
         if ($daysAgo < $specified_days && $patientRecord->status === 'positive') {
-          $this->response['data'] = array(
-            'from' => 'patient',
-            'status' => 'positive'
+          return array(
+            'status' => 'positive',
+            'status_from' => 'patient',
+            'status_label' => 'POSITIVE PATIENT FOR THE LAST 14 DAYS'
           );
-          return $this->response();
         } else if ($daysAgo < $specified_days) {
           $statuses['patient'] = $patientRecord->status;
         }
@@ -117,8 +134,8 @@ class TracingController extends APIController
          * Check status for visited place
          */
         foreach ($visitedPlacesRecord as $record) {
-          $placeRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $record->date)->format("Y-m-d"));
-          $daysAgo = $placeRecordDate->diffInDays($now);
+          $visitRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $record->date)->format("Y-m-d"));
+          $daysAgo = $visitRecordDate->diffInDays($now);
           if ($daysAgo < $specified_days) {
             $visited_place_status = app($this->tracingPlaceController)->getStatus($record, $radius);
             if (array_search($visited_place_status, $priorityStatus) < array_search($statuses['visited_places'], $priorityStatus)) {
@@ -144,28 +161,55 @@ class TracingController extends APIController
         }
       }
 
-
-      $status['key'] = 'No record';
-      $status['value'] = 'negative';
-      foreach ($statuses as $key => $value) {
-        if (array_search($value, $priorityStatus) < array_search($status['value'], $priorityStatus)) { 
-          $status['key'] = $key;
-          $status['value'] = $value;
+      if ($temperatureRecord->count() > 0) {
+        /**
+         * Check status for temperature
+         */
+        foreach ($temperatureRecord as $record) {
+          $temperatureRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $record->created_at)->format("Y-m-d H:i:s"));
+          $daysAgo = $temperatureRecordDate->diffInDays($now);
+          if ($daysAgo < $specified_days) {
+            if ($record->value > 37) {
+              $statuses['temperature'] = 'positive';      
+            }
+          }
         }
       }
 
-      $this->response['data'] = array(
-        'from' => $status['key'],
-        'status' => $status['value']
+      $status['status'] = 'negative';
+      $status['status_from'] = 'No record';
+      $status['status_label'] = 'IN CONTACT WITH NEGATIVE LAST 14 DAYS';
+      foreach ($statuses as $key => $value) {
+        if (array_search($value, $priorityStatus) < array_search($status['status'], $priorityStatus)) { 
+          $status['status'] = $value;
+          $status['status_from'] = $key;
+          $status['status_label'] = 'testing...';
+        }
+      }
+
+      return array(
+        'status' => $status['status'],
+        'status_from' => $status['status_from'],
+        'status_label' => $status['status_label']
       );
-      return $this->response();
-      // return $testing;
     }
 
-    public function getStatusByAccountId($accountId){
-      return array(
-        'status' => 'negative',
-        'status_label' => 'IN CONTACT WITH NEGATIVE LAST 14 DAYS'
-      );
+    public function getStatusLabel($status, $from = null) {
+      switch ($status) {
+        case 'positive':
+          if ($from === 'patient') {
+            return 'Positive patient for the last 14 days';
+          } else if ($from === 'temperature') {
+            return 'High temperature in the past days';
+          } else {
+            return 'In contact with POSITIVE last 14 days';
+          }
+        case 'pui':
+          return 'In contact with PUI last 14 days';
+        case 'pum':
+          return 'In contact with PUM last 14 days';
+        default:
+          return 'In contact with NEGATIVE last 14 days';
+      }
     }
 }
