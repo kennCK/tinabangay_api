@@ -122,7 +122,7 @@ class TracingController extends APIController
           return array(
             'status' => 'positive',
             'status_from' => 'patient',
-            'status_label' => 'POSITIVE PATIENT FOR THE LAST 14 DAYS'
+            'status_label' => $this->getStatusLabel('positive', 'patient')
           );
         } else if ($daysAgo < $specified_days) {
           $statuses['patient'] = $patientRecord->status;
@@ -178,12 +178,12 @@ class TracingController extends APIController
 
       $status['status'] = 'negative';
       $status['status_from'] = 'No record';
-      $status['status_label'] = 'IN CONTACT WITH NEGATIVE LAST 14 DAYS';
+      $status['status_label'] = $this->getStatusLabel($status['status']);
       foreach ($statuses as $key => $value) {
         if (array_search($value, $priorityStatus) < array_search($status['status'], $priorityStatus)) { 
           $status['status'] = $value;
           $status['status_from'] = $key;
-          $status['status_label'] = 'testing...';
+          $status['status_label'] = $this->getStatusLabel($value, $key);
         }
       }
 
@@ -195,21 +195,30 @@ class TracingController extends APIController
     }
 
     public function getStatusLabel($status, $from = null) {
+      $specified_days = env('SPECIFIED_DAYS');
+      if (!isset($specified_days)) {
+        throw new \Exception('No env variable for "SPECIFIED_DAYS');
+      }
+      $template = ' last $days days';
+      $days = array(
+        '$days' => $specified_days
+      );
+      
       switch ($status) {
         case 'positive':
           if ($from === 'patient') {
-            return 'Positive patient for the last 14 days';
+            return 'Positive patient for the' . strtr($template, $days);
           } else if ($from === 'temperature') {
             return 'High temperature in the past days';
           } else {
-            return 'In contact with POSITIVE last 14 days';
+            return 'In contact with POSITIVE' . strtr($template, $days);
           }
         case 'pui':
-          return 'In contact with PUI last 14 days';
+          return 'In contact with PUI' . strtr($template, $days);
         case 'pum':
-          return 'In contact with PUM last 14 days';
+          return 'In contact with PUM' . strtr($template, $days);
         default:
-          return 'In contact with NEGATIVE last 14 days';
+          return 'In contact with NEGATIVE' . strtr($template, $days);
       }
     }
 }
