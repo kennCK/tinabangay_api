@@ -166,8 +166,7 @@ class TracingController extends APIController
         /**
          * Check status for temperature
          */
-          $statuses['temperature'] = 'positive';      
-        }
+        $statuses['temperature'] = 'positive';
       }
 
       $status['status'] = 'negative';
