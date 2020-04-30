@@ -102,15 +102,12 @@ class TracingController extends APIController
         'transportation' => 'negative',
         'temperature' => 'negative'
       );
-      
+      $specifiedDate = Carbon::now()->subDays(intval($specified_days));
       /**
        * Fetch records for all params
        */
       $now = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
       $patientRecord = Patient::where('account_id', '=', $accountId)->first();
-      $visitedPlacesRecord = VisitedPlace::where('account_id', '=', $accountId)->get();
-      $transportationRecord = Ride::where('account_id', '=', $accountId)->where('payload', '=', 'qr')->get();
-      $temperatureRecord = Temperature::where('account_id', '=', $accountId)->get();
 
       if ($patientRecord !== null) {
         /**
@@ -122,57 +119,54 @@ class TracingController extends APIController
           return array(
             'status' => 'positive',
             'status_from' => 'patient',
-            'status_label' => $this->getStatusLabel('positive', 'patient')
+            'status_label' => 'positive'
           );
         } else if ($daysAgo < $specified_days) {
           $statuses['patient'] = $patientRecord->status;
         }
       }
       
+      $visitedPlacesRecord = VisitedPlace::where('account_id', '=', $accountId)
+      ->where('date', '>', $specifiedDate->format('Y-m-d'))
+      ->get();
       if ($visitedPlacesRecord->count() > 0) {
         /**
          * Check status for visited place
          */
         foreach ($visitedPlacesRecord as $record) {
-          $visitRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $record->date)->format("Y-m-d"));
-          $daysAgo = $visitRecordDate->diffInDays($now);
-          if ($daysAgo < $specified_days) {
-            $visited_place_status = app($this->tracingPlaceController)->getStatus($record, $radius);
-            if (array_search($visited_place_status, $priorityStatus) < array_search($statuses['visited_places'], $priorityStatus)) {
-              $statuses['visited_places'] = $visited_place_status;
-            }
+          $visited_place_status = app($this->tracingPlaceController)->getStatus($record, $radius);
+          if (array_search($visited_place_status, $priorityStatus) < array_search($statuses['visited_places'], $priorityStatus)) {
+            $statuses['visited_places'] = $visited_place_status;
           }
         }
       }
       
+      $transportationRecord = Ride::where('account_id', '=', $accountId)
+      ->where('payload', '=', 'qr')
+      ->where('created_at', '>', $specifiedDate)
+      ->get();
       if ($transportationRecord->count() > 0) {
         /**
          * Check status for transportations
          */
         foreach ($transportationRecord as $record) {
-          $transpoRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $record->created_at)->format("Y-m-d H:i:s"));
-          $daysAgo = $transpoRecordDate->diffInDays($now);
-          if ($daysAgo < $specified_days) {
-            $transpo_status = app($this->rideController)->checkQrRoute($record);
-            if (array_search($transpo_status, $priorityStatus) < array_search($statuses['transportation'], $priorityStatus)) {
-              $statuses['transportation'] = $transpo_status;
-            }
+          $transpo_status = app($this->rideController)->checkQrRoute($record);
+          if (array_search($transpo_status, $priorityStatus) < array_search($statuses['transportation'], $priorityStatus)) {
+            $statuses['transportation'] = $transpo_status;
           }
         }
       }
+
+      $temperatureRecord = Temperature::where('account_id', '=', $accountId)
+      ->where('created_at', '>', $specifiedDate)
+      ->where('value', '>', 37)
+      ->get();
 
       if ($temperatureRecord->count() > 0) {
         /**
          * Check status for temperature
          */
-        foreach ($temperatureRecord as $record) {
-          $temperatureRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $record->created_at)->format("Y-m-d H:i:s"));
-          $daysAgo = $temperatureRecordDate->diffInDays($now);
-          if ($daysAgo < $specified_days) {
-            if ($record->value > 37) {
-              $statuses['temperature'] = 'positive';      
-            }
-          }
+          $statuses['temperature'] = 'positive';      
         }
       }
 
