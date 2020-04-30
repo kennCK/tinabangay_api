@@ -20,34 +20,12 @@ class TracingController extends APIController
     public $rideController = 'App\Http\Controllers\RideController';
 
     public function tree(){
-        $placesList = VisitedPlace::with('patients','userInfo')->get();
-        $this->retrieveDB($placesList);
-        return $this->response();
-        
-//         if(!empty($placesList)){
-//           $jsonData = json_encode($placesList->toArray());
-//           dd($jsonData);
-//         }
-        
-        // $list = DB::table('visited_places')
-        //         ->join('patients', 'patients.account_id', '=', 'visited_places.account_id')
-        //         ->join('account_informations', 'account_informations.account_id', '=', 'patients.account_id')
-        //         ->select('*')
-        //         ->get();
-        
-        // if(!empty($list)){
-        //     $jsonData = json_encode($list->toArray());
-        //     dd($jsonData);
-        // }
-     
+      $placesList = VisitedPlace::with('patients','userInfo')->get();
+      $this->retrieveDB($placesList);
+      return $this->response();
     }
 
     public function getHistory($username, $agent_id){
-      // retrieve the history of visited places, temperature 
-      // and transportation 
-      // of the user by passing 
-      // the username and id of the agent
-
       $agentExists = Account::where('id','=', $agent_id)->where('account_type','=', 'AGENCY')->get();
       
       $this->response['data'] = null;
