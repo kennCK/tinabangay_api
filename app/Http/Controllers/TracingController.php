@@ -75,93 +75,96 @@ class TracingController extends APIController
        */
       $priorityStatus = array('death','positive','pui','pum','negative');
       $statuses = array(
-        'patient' => 'negative',
         'visited_places' => 'negative',
         'transportation' => 'negative',
-        'temperature' => 'negative'
       );
-      $specifiedDate = Carbon::now()->subDays(intval($specified_days));
-      /**
-       * Fetch records for all params
-       */
       $now = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
+      $specifiedDate = Carbon::now()->subDays(intval($specified_days));
+      
+      /**
+       * Check status for patient (if exist)
+       */
       $patientRecord = Patient::where('account_id', '=', $accountId)->first();
-
       if ($patientRecord !== null) {
-        /**
-         * Check status for patient (if exist)
-         */
         $patientRecordDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $patientRecord->created_at)->format("Y-m-d H:i:s"));
         $daysAgo = $patientRecordDate->diffInDays($now);
-        if ($daysAgo < $specified_days && $patientRecord->status === 'positive') {
-          return array(
-            'status' => 'positive',
-            'status_from' => 'patient',
-            'status_label' => 'positive'
-          );
-        } else if ($daysAgo < $specified_days) {
-          $statuses['patient'] = $patientRecord->status;
+        if ($daysAgo < $specified_days) {
+          if ($patientRecord->status !== 'negative') {
+            return array(
+              'status' => $patientRecord->status,
+              'status_from' => 'patient',
+              'status_label' => $this->getStatusLabel($patientRecord->status, 'patient')
+            );
+          }
         }
       }
       
+      /**
+       * Check status for visited place
+       */
       $visitedPlacesRecord = VisitedPlace::where('account_id', '=', $accountId)
       ->where('date', '>', $specifiedDate->format('Y-m-d'))
       ->get();
       if ($visitedPlacesRecord->count() > 0) {
-        /**
-         * Check status for visited place
-         */
         foreach ($visitedPlacesRecord as $record) {
           $visited_place_status = app($this->tracingPlaceController)->getStatus($record, $radius);
           if (array_search($visited_place_status, $priorityStatus) < array_search($statuses['visited_places'], $priorityStatus)) {
             $statuses['visited_places'] = $visited_place_status;
           }
         }
+
+        if ($statuses['visited_places'] !== 'negative') {
+          return array(
+            'status' => $statuses['visited_places'],
+            'status_from' => 'visited_places',
+            'status_label' => $this->getStatusLabel($statuses['visited_places'], 'visited_places')
+          );
+        }
       }
       
+      /**
+       * Check status for transportations
+       */
       $transportationRecord = Ride::where('account_id', '=', $accountId)
       ->where('payload', '=', 'qr')
       ->where('created_at', '>', $specifiedDate)
       ->get();
       if ($transportationRecord->count() > 0) {
-        /**
-         * Check status for transportations
-         */
         foreach ($transportationRecord as $record) {
           $transpo_status = app($this->rideController)->checkQrRoute($record);
           if (array_search($transpo_status, $priorityStatus) < array_search($statuses['transportation'], $priorityStatus)) {
             $statuses['transportation'] = $transpo_status;
           }
         }
+
+        if ($statuses['transportation'] !== 'negative') {
+          return array(
+            'status' => $statuses['transportation'],
+            'status_from' => 'transportation',
+            'status_label' => $this->getStatusLabel($statuses['transportation'], 'transportation')
+          );
+        }
       }
 
+      /**
+       * Check status for temperature
+       */
       $temperatureRecord = Temperature::where('account_id', '=', $accountId)
       ->where('created_at', '>', $specifiedDate)
       ->where('value', '>', 37)
       ->get();
-
       if ($temperatureRecord->count() > 0) {
-        /**
-         * Check status for temperature
-         */
-        $statuses['temperature'] = 'positive';
-      }
-
-      $status['status'] = 'negative';
-      $status['status_from'] = 'No record';
-      $status['status_label'] = $this->getStatusLabel($status['status']);
-      foreach ($statuses as $key => $value) {
-        if (array_search($value, $priorityStatus) < array_search($status['status'], $priorityStatus)) { 
-          $status['status'] = $value;
-          $status['status_from'] = $key;
-          $status['status_label'] = $this->getStatusLabel($value, $key);
-        }
+        return array(
+          'status' => 'positive',
+          'status_from' => 'temperature',
+          'status_label' => $this->getStatusLabel('positive', 'temperature')
+        );
       }
 
       return array(
-        'status' => $status['status'],
-        'status_from' => $status['status_from'],
-        'status_label' => $status['status_label']
+        'status' => 'negative',
+        'status_from' => 'No record',
+        'status_label' => $this->getStatusLabel('negative')
       );
     }
 
@@ -174,12 +177,14 @@ class TracingController extends APIController
       $days = array(
         '$days' => $specified_days
       );
+
+      if ($from === 'patient') {
+        return $status . ' patient for the' . strtr($template, $days);
+      }
       
       switch ($status) {
         case 'positive':
-          if ($from === 'patient') {
-            return 'Positive patient for the' . strtr($template, $days);
-          } else if ($from === 'temperature') {
+          if ($from === 'temperature') {
             return 'High temperature in the past days';
           } else {
             return 'In contact with POSITIVE' . strtr($template, $days);
