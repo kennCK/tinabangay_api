@@ -173,26 +173,26 @@ class TracingController extends APIController
       if (!isset($specified_days)) {
         throw new \Exception('No env variable for "SPECIFIED_DAYS');
       }
-      $template = ' last $days days';
+      $template = ' LAST $days DAYS';
       $days = array(
         '$days' => $specified_days
       );
 
       if ($from === 'patient') {
-        return $status . ' patient for the' . strtr($template, $days);
+        return strtoupper($status). ' PATIENT FOR THE' . strtr($template, $days);
       }
       
       switch ($status) {
         case 'positive':
           if ($from === 'temperature') {
-            return 'High temperature in the past days';
+            return 'HIGH TEMPERATURE IN THE PAST 14 DAYS';
           } else {
-            return 'In contact with POSITIVE' . strtr($template, $days);
+            return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
           }
         case 'pui':
-          return 'In contact with PUI' . strtr($template, $days);
+          return 'IN CONTACT WITH PUI' . strtr($template, $days);
         case 'pum':
-          return 'In contact with PUM' . strtr($template, $days);
+          return 'IN CONTACT WITH PUM' . strtr($template, $days);
         default:
           return 'CLEAR THE' . strtr($template, $days);
       }
