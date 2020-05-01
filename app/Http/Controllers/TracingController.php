@@ -49,6 +49,9 @@ class TracingController extends APIController
     }
 
     public function getStatus(Request $request){
+      if($this->checkAuthenticatedUser(true) == false){
+        return $this->response();
+      }
       $data = $request->all();
       $accountId = $data['id'];
       $status = $this->getStatusByAccountId($accountId);

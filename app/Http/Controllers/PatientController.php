@@ -15,6 +15,9 @@ class PatientController extends APIController
   }
 
   public function linking(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $data = $request->all();
     if(sizeof($data['entries']) > 0){
       foreach ($data['entries'] as $key) {
@@ -100,6 +103,9 @@ class PatientController extends APIController
   }
 
   public function summary(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $this->response['data'] = array(
       'positive' => Patient::where('status', '=', 'positive')->count(),
       'pui'     => Patient::where('status', '=', 'pui')->count(),
