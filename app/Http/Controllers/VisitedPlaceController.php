@@ -76,18 +76,21 @@ class VisitedPlaceController extends APIController
     foreach ($data as $key) {
       if($key['patient_id'] != null){
         // get status
-        $status = app($this->patientController)->getStatusByParams('id', intval($key['patient_id']));
-        $this->response['data'][$i]['status'] = $status;
-        $this->response['data'][$i]['status_label'] = $status;
+        $patient = app($this->patientController)->getStatusByParams('id', intval($key['patient_id']));
+        $this->response['data'][$i]['status'] = $patient ? $patient['status'] : null;
+        $this->response['data'][$i]['status_label'] = $patient ? $patient['status'] : null;
+          $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;;
       }else{
-        $status = app($this->patientController)->getStatusByParams('account_id', intval($key['account_id']));
+        $patient = app($this->patientController)->getStatusByParams('account_id', intval($key['account_id']));
         if($status){
-          $this->response['data'][$i]['status'] = $status;
-          $this->response['data'][$i]['status_label'] = $status;
+          $this->response['data'][$i]['status'] = $patient ? $patient['status'] : null;
+          $this->response['data'][$i]['status_label'] = $patient ? $patient['status'] : null;
+          $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;
         }else{
           $status = app($this->tracingPlaceController)->getStatus($data[$i], floatval($radius));
           $this->response['data'][$i]['status'] = $status;
-          $this->response['data'][$i]['status_label'] = 'IN CONTACT WITH '.$status;
+          $this->response['data'][$i]['status_label'] = $status != 'negative' ? 'IN CONTACT WITH '.$status.' THE LAST '.env('SPECIFIED_DAYS').'DAYS' : 'CLEAR THE LAST '.env('SPECIFIED_DAYS').' DAYS';
+          $this->response['data'][$i]['remarks'] = null;
         }
       }
       if($key['account_id'] != null){
