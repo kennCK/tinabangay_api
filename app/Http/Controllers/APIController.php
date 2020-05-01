@@ -67,7 +67,7 @@ class APIController extends Controller
   public function checkAuthenticatedUser($flag = false)
   {
     if(env('TEST') == false){
-      if($flag == true){
+      // if($flag == true){
       //   if(isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['HTTP_REFERER'], $this->whiteListedDomain)){
       //     $this->response['error'] = array(
       //       'message' => 'Invalid Domain!',
