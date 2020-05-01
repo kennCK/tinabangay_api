@@ -10,6 +10,9 @@ class TracingPlaceController extends APIController
   public $existAccount = [];
   public $existPatient = [];
   public function places(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $isPaginate = false;
     $page_start = 0;
     $page_end = 10;

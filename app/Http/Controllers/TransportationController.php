@@ -19,6 +19,9 @@ class TransportationController extends APIController
   }
 
   public function retrieveTracing(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $data = $request->all();
     $transportion = DB::table('transportations AS T1')
       ->join('locations AS T2', 'T2.account_id', '=', 'T1.account_id')
@@ -51,6 +54,9 @@ class TransportationController extends APIController
   }
 
   public function update(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $data = $request->all();
     Transportation::where('id', '=', $data['id'])->update(
       array(

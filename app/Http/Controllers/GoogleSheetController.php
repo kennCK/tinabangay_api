@@ -10,6 +10,9 @@ class GoogleSheetController extends APIController
   
   public $visitedPlacesClass = 'App\Http\Controllers\VisitedPlaceController';
   public function patients(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $client = new \Google_Client();
     $client->setApplicationName('Increment API');
     $client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
