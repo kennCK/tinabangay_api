@@ -82,7 +82,7 @@ class VisitedPlaceController extends APIController
           $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;;
       }else{
         $patient = app($this->patientController)->getStatusByParams('account_id', intval($key['account_id']));
-        if($status){
+        if($patient){
           $this->response['data'][$i]['status'] = $patient ? $patient['status'] : null;
           $this->response['data'][$i]['status_label'] = $patient ? $patient['status'] : null;
           $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;
