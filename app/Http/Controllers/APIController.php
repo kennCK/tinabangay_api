@@ -583,6 +583,7 @@ class APIController extends Controller
       $result[0]['profile'] =  app('Increment\Account\Http\AccountProfileController')->getAccountProfile($accountId);
       $result[0]['information'] = app('Increment\Account\Http\AccountInformationController')->getAccountInformation($accountId);
       $result[0]['billing'] = app('Increment\Account\Http\BillingInformationController')->getBillingInformation($accountId);
+      $result[0]['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
       return $result[0];
     }else{
       return null;
@@ -603,6 +604,7 @@ class APIController extends Controller
     $result['sub_account'] = app('Increment\Account\Http\SubAccountController')->retrieveByParams('member', $accountId);
     $result['transportation'] = app('App\Http\Controllers\TransportationController')->getByParams('account_id', $accountId);
     $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($accountId);
+    $result['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
     return $result;
   }
 
