@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Symptom;
+use Illuminate\Support\Facades\DB;
 class SymptomController extends APIController
 {
   function __construct(){
@@ -36,7 +37,6 @@ class SymptomController extends APIController
       ->where('T2.locality', 'like', $data['locality'])
       ->where('T2.region', 'like', $data['region'])
       ->where('T2.country', 'like', $data['country'])
-      ->where('T1.value','>=', $data['temperature'])
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->orderBy('T1.'.$data['sort']['column'], $data['sort']['value'])
@@ -46,7 +46,7 @@ class SymptomController extends APIController
     $i = 0;
     foreach ($results as $key) {
       $results[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
-      $results[$i]['date_human'] = $this->daysDiffDate($key['date']);
+      $results[$i]['date_human'] = $this->daysDiffByDate($key['date']);
       $i++;
     }
     $this->response['data'] = $results;
