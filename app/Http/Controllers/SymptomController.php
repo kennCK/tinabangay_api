@@ -12,4 +12,17 @@ class SymptomController extends APIController
       'remarks'
     );
   }
+
+  public function retrieve(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data); 
+    $i = 0;
+    $data = $this->response['data'];
+    foreach ($data as $key) {
+      $data[$i]['date_human'] = $this->daysDiffByDate($key['date']);
+      $i++;
+    }
+    $this->response['data'] = $data;
+    return $this->response();
+  }
 }
