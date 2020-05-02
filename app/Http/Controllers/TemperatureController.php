@@ -55,6 +55,9 @@ class TemperatureController extends APIController
   }
   
   public function retrieveTracing(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $data = $request->all();
     $temperatures = DB::table('temperatures AS T1')
       ->join('locations AS T2', 'T2.account_id', '=', 'T1.account_id')
@@ -65,7 +68,7 @@ class TemperatureController extends APIController
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->orderBy('T1.'.$data['sort']['column'], $data['sort']['value'])
-      ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region'])
+      ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region', 'T2.code'])
       ->get();
     $results = json_decode($temperatures, true);
     $i = 0;
@@ -79,6 +82,9 @@ class TemperatureController extends APIController
   }
 
   public function summary(Request $request){
+    if($this->checkAuthenticatedUser(true) == false){
+      return $this->response();
+    }
     $data = $request->all();
     $temperatureLocation = DB::table('temperatures AS T1')
       ->join('temperature_locations AS T2','T1.id','=','T2.temperature_id')
