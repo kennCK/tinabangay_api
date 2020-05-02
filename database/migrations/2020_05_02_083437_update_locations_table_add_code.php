@@ -14,7 +14,7 @@ class UpdateLocationsTableAddCode extends Migration
     public function up()
     {
       Schema::table('locations', function (Blueprint $table) {
-        $table->string('code')->after('id');
+        $table->string('code')->after('id')->nullable();
       });
     }
 
