@@ -249,3 +249,12 @@ Route::post($route.'retrieve', $controller."retrieve");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
+
+//Custom Controller
+$route = env('PACKAGE_ROUTE', '').'/import/';
+$controller = 'CustomController@';
+Route::post($route.'accounts', $controller."importAccounts");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
