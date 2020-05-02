@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Location;
-class LocationController extends APIController
+use App\Symptom;
+class SymptomController extends APIController
 {
   function __construct(){
-    $this->model = new Location();
+    $this->model = new Symptom();
     $this->notRequired = array(
-      'code'
+      'remarks'
     );
   }
 }

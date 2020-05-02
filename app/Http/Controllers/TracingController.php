@@ -197,7 +197,7 @@ class TracingController extends APIController
         case 'pum':
           return 'IN CONTACT WITH PUM' . strtr($template, $days);
         default:
-          return 'CLEAR THE' . strtr($template, $days);
+          return 'CLEARED THE' . strtr($template, $days);
       }
     }
 }
