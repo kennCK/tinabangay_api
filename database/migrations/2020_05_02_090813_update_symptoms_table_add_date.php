@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateLocationsTableAddCode extends Migration
+class UpdateSymptomsTableAddDate extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class UpdateLocationsTableAddCode extends Migration
      */
     public function up()
     {
-      Schema::table('locations', function (Blueprint $table) {
-        $table->string('code')->after('id')->nullable();
-      });
+        Schema::table('symptoms', function (Blueprint $table) {
+            $table->date('date')->after('remarks');
+        });
     }
 
     /**
@@ -25,8 +25,8 @@ class UpdateLocationsTableAddCode extends Migration
      */
     public function down()
     {
-      Schema::table('locations', function (Blueprint $table) {
-        //
-      });
+        Schema::table('symptoms', function (Blueprint $table) {
+            //
+        });
     }
 }
