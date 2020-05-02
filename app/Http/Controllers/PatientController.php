@@ -134,6 +134,23 @@ class PatientController extends APIController
     return $this->response();
   }
 
+  public function createSymptoms(Request $request){
+    $data = $request->all(); 
+    $accountId = isset($data['account_id']) ? $data['account_id'] : null;
+    $patientCode = isset($data['code']) ? $data['code'] : null;
+    $source = isset($data['source']) ? $data['source'] : null;
+    $newStatus = $data['status'];
+    $previousAccount = isset($accountId) ? Patient::where('account_id', '=', $accountId)->orderBy('created_at', 'desc')->get() : array();
+    $previousCode = isset($patientCode) ? Patient::where('code', '=', $patientCode)->orderBy('created_at', 'desc')->get() : array();
+    if(sizeof($previousAccount) > 0 && $previousAccount[0]['status'] == $newStatus || sizeof($previousCode) > 0 && $previousCode[0]['status'] == $newStatus){
+      $this->response['data'] = null;
+      $this->response['error'] = "Duplicate Entry!";
+    }else{      
+      $this->insertDB($data);
+    }
+    return $this->response();
+  }
+
   public function retrieveNotifications(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);
