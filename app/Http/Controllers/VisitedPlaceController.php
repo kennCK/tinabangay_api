@@ -9,6 +9,7 @@ class VisitedPlaceController extends APIController
 {
   public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
   public $patientController = 'App\Http\Controllers\PatientController';
+  public $locationController = 'App\Http\Controllers\LocationController';
   
   function __construct(){
     $this->model = new VisitedPlace();
@@ -95,6 +96,7 @@ class VisitedPlaceController extends APIController
       }
       if($key['account_id'] != null){
         $this->response['data'][$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
+        $this->response['data'][$i]['location'] = app($this->locationController)->getByParamsWithCode('account_id', $key['account_id']);
       }else{
         $this->response['data'][$i]['account'] = null;
       }

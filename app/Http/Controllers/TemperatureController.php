@@ -68,7 +68,7 @@ class TemperatureController extends APIController
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->orderBy('T1.'.$data['sort']['column'], $data['sort']['value'])
-      ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region'])
+      ->select(['T1.*','T2.route','T2.locality','T2.country','T2.region', 'T2.code'])
       ->get();
     $results = json_decode($temperatures, true);
     $i = 0;
