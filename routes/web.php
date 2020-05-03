@@ -254,3 +254,4 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/customs/';
 $controller = 'CustomController@';
 Route::post($route.'import_accounts', $controller."importAccounts");
+Route::post($route.'import_symptoms', $controller."importSymptoms");

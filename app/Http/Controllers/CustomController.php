@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BrgyCode;
 use App\Location;
+use App\Symptom;
 use Increment\Account\Models\Account;
 use Increment\Account\Models\SubAccount;
 use Increment\Account\Models\AccountInformation;
@@ -94,6 +95,35 @@ class CustomController extends APIController
             Location::insert($locations);
           }
 
+        } 
+      }
+
+      return $this->response();
+    }
+
+    public function importSymptoms(Request $request) {
+      $data = $request->all();
+      if (sizeof($data['entries']) > 0) {
+        foreach ($data['entries'] as $entry) {
+          /**
+           * check if username exists
+           */
+          $username = Account::where('username', '=', $entry['username'])->first();
+          if (!$username) {
+            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' not found';
+            return $this->response();
+          }
+
+          $dataSymptoms = array(
+            'account_id'  => $username->id,
+            'type'        => $entry['type'],
+            'remarks'     => $entry['remarks'],
+            'date'        => $entry['date'],
+            'created_at'  => Carbon::now()
+          );
+
+          $this->model = new Symptom();
+          $this->insertDB($dataSymptoms, true);
         } 
       }
 
