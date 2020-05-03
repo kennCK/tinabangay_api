@@ -56,9 +56,9 @@ class CustomController extends APIController
           if ($accountId) {
             $this->createDetails($accountId, $entry);
             if(env('SUB_ACCOUNT') == true){
-                $status = $entry['status'];
-                if($status == 'AGENCY_BRGY'){
-                  app('Increment\Account\Http\SubAccountController')->createByParams($accountId, $entry['member'], $status);
+                $status = 'USER';
+                if($entry['status'] == 'AGENCY_BRGY'){
+                  app('Increment\Account\Http\SubAccountController')->createByParams($entry['creator'], $accountId, $status);
                 }
             }
           }
