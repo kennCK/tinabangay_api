@@ -104,7 +104,6 @@ class CustomController extends APIController
     public function importSymptoms(Request $request) {
       $data = $request->all();
       if (sizeof($data['entries']) > 0) {
-        $i = 0;
         foreach ($data['entries'] as $entry) {
           /**
            * check if username exists
