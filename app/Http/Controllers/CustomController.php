@@ -36,6 +36,7 @@ class CustomController extends APIController
           );
           $this->model = new Account();
           $this->insertDB($dataAccount, true);
+          
           /**
            * return if error
            */
@@ -54,7 +55,6 @@ class CustomController extends APIController
           $accountId = $this->response['data'];
           if ($accountId) {
             $this->createDetails($accountId, $entry);
-            // send email verification here
             if(env('SUB_ACCOUNT') == true){
                 $status = $entry['status'];
                 if($status == 'AGENCY_BRGY'){
