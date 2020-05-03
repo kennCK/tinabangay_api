@@ -27,7 +27,7 @@ class CustomController extends APIController
         foreach ($data['entries'] as $entry) {
           $dataAccount = array(
             'code'          => $this->generateCode(),
-            'password'      => Hash::make($request['password']),
+            'password'      => Hash::make($entry['password']),
             'status'        => 'NOT_VERIFIED',
             'email'         => $entry['email'],
             'username'      => $entry['username'],
