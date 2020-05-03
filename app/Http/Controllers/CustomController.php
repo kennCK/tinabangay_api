@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\BrgyCode;
+use App\Location;
 use Increment\Account\Models\Account;
 use Increment\Account\Models\SubAccount;
 use Increment\Account\Models\AccountInformation;
@@ -22,9 +24,17 @@ class CustomController extends APIController
 
     public function importAccounts (Request $request) {
       $data = $request->all();
-
       if (sizeof($data['entries']) > 0) {
         foreach ($data['entries'] as $entry) {
+          /**
+           * check if valid uacs_brgy_code
+           */
+          $brgy_code = BrgyCode::where('code', '=', $entry['uacs_brgy_code'])->first();
+          if (!$brgy_code) {
+            $this->response['errorMessage'] = 'Invalid uacs_brgy_code: ' . $entry['uacs_brgy_code'] . '.';
+            return $this->response();
+          }
+
           $dataAccount = array(
             'code'          => $this->generateCode(),
             'password'      => Hash::make($entry['password']),
@@ -54,14 +64,36 @@ class CustomController extends APIController
 
           $accountId = $this->response['data'];
           if ($accountId) {
+            /**
+             * insert account_informations
+             */
             $this->createDetails($accountId, $entry);
+            /**
+             * insert sub_accounts
+             */
             if(env('SUB_ACCOUNT') == true){
                 $status = 'USER';
                 if($entry['status'] == 'AGENCY_BRGY'){
                   app('Increment\Account\Http\SubAccountController')->createByParams($entry['creator'], $accountId, $status);
                 }
             }
+            /**
+             * insert locations
+             */
+            $locations = array(
+              'code'        => $entry['uacs_brgy_code'],
+              'account_id'  => $accountId,
+              'longitude'   => $brgy_code['longitude'],
+              'latitude'    => $brgy_code['latitude'],
+              'route'       => $brgy_code['route'],
+              'locality'    => $brgy_code['locality'],
+              'country'     => $brgy_code['country'],
+              'region'      => $brgy_code['region'],
+              'created_at'  => Carbon::now()
+            );
+            Location::insert($locations);
           }
+
         } 
       }
 
