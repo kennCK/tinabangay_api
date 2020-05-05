@@ -111,7 +111,17 @@ class CustomController extends APIController
            */
           $username = Account::where('username', '=', $entry['username'])->first();
           if (!$username) {
-            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' does not exists';
+            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' does not exists.';
+            return $this->response();
+          }
+
+          /**
+           * check user if member of creator
+           */
+          $member = SubAccount::where('account_id', '=', $entry['creator_id'])
+                              ->where('member', '=', $username->id)->first();
+          if (!$member) {
+            $this->response['errorMessage'] = 'Sorry, the username \'' . $entry['username'] . '\' is not your member.';
             return $this->response();
           }
 
@@ -141,6 +151,16 @@ class CustomController extends APIController
           $username = Account::where('username', '=', $entry['username'])->first();
           if (!$username) {
             $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' does not exists';
+            return $this->response();
+          }
+
+          /**
+           * check user if member of creator
+           */
+          $member = SubAccount::where('account_id', '=', $entry['creator_id'])
+                              ->where('member', '=', $username->id)->first();
+          if (!$member) {
+            $this->response['errorMessage'] = 'Sorry, the username \'' . $entry['username'] . '\' is not your member.';
             return $this->response();
           }
 
