@@ -104,6 +104,7 @@ class CustomController extends APIController
 
     public function importSymptoms(Request $request) {
       $data = $request->all();
+      $symptomsArr = array();
       if (sizeof($data['entries']) > 0) {
         foreach ($data['entries'] as $entry) {
           /**
@@ -133,16 +134,21 @@ class CustomController extends APIController
             'created_at'  => Carbon::now()
           );
 
-          $this->model = new Symptom();
-          $this->insertDB($dataSymptoms, true);
+          array_push($symptomsArr, $dataSymptoms);
         } 
       }
+
+      if (sizeof($symptomsArr) > 0) {
+        Symptom::insert($symptomsArr);
+        $this->response['data'] = sizeof($symptomsArr);
+      } 
 
       return $this->response();
     }
 
     public function importVisitedPlaces(Request $request) {
       $data = $request->all();
+      $visitedPlacesArr = array();
       if (sizeof($data['entries']) > 0) {
         foreach ($data['entries'] as $entry) {
           /**
@@ -186,12 +192,13 @@ class CustomController extends APIController
             'created_at'  => Carbon::now()
           );
 
-          $this->model = new VisitedPlace();
-          $this->notRequired = array(
-            'patient_id'
-          );
-          $this->insertDB($visitedPlace, true);
+          array_push($visitedPlacesArr, $visitedPlace);
         } 
+      }
+
+      if (sizeof($visitedPlacesArr) > 0) {
+        VisitedPlace::insert($visitedPlacesArr);
+        $this->response['data'] = sizeof($visitedPlacesArr);
       }
 
       return $this->response();
