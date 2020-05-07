@@ -204,6 +204,48 @@ class CustomController extends APIController
       return $this->response();
     }
 
+    public function setBrgyAddress(Request $request) {
+      $data = $request->all();
+      $prevCode = $data['params']['currentCode'];
+      $this->response['invalidCode'] = false;
+
+      $brgy_code = BrgyCode::where('code', '=', $data['params']['brgyCode'])->first();
+      if (!$brgy_code) {
+        $this->response['invalidCode'] = true;
+        return $this->response();
+      }
+
+      if ($prevCode) {
+        $location = array(
+          'code'        => $data['params']['brgyCode'],
+          'account_id'  => $data['accountId'],
+          'longitude'   => $brgy_code['longitude'],
+          'latitude'    => $brgy_code['latitude'],
+          'route'       => $brgy_code['route'],
+          'locality'    => $brgy_code['locality'],
+          'country'     => $brgy_code['country'],
+          'region'      => $brgy_code['region'],
+          'created_at'  => Carbon::now()
+        );
+        Location::where('account_id', '=', $data['accountId'])->update($location);
+      } else {
+        $location = array(
+          'code'        => $data['params']['brgyCode'],
+          'account_id'  => $data['accountId'],
+          'longitude'   => $brgy_code['longitude'],
+          'latitude'    => $brgy_code['latitude'],
+          'route'       => $brgy_code['route'],
+          'locality'    => $brgy_code['locality'],
+          'country'     => $brgy_code['country'],
+          'region'      => $brgy_code['region'],
+          'created_at'  => Carbon::now()
+        );
+        Location::insert($location);
+      }
+  
+      return $this->response();
+    }
+
     public function createDetails($accountId, $entry){
       $info = new AccountInformation();
       $info->account_id = $accountId;
