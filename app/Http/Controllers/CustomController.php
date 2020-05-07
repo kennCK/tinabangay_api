@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\BrgyCode;
 use App\Location;
 use App\Symptom;
+use App\VisitedPlace;
 use Increment\Account\Models\Account;
 use Increment\Account\Models\SubAccount;
 use Increment\Account\Models\AccountInformation;
@@ -103,6 +104,7 @@ class CustomController extends APIController
 
     public function importSymptoms(Request $request) {
       $data = $request->all();
+      $symptomsArr = array();
       if (sizeof($data['entries']) > 0) {
         foreach ($data['entries'] as $entry) {
           /**
@@ -110,7 +112,17 @@ class CustomController extends APIController
            */
           $username = Account::where('username', '=', $entry['username'])->first();
           if (!$username) {
-            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' not found';
+            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' does not exists.';
+            return $this->response();
+          }
+
+          /**
+           * check user if member of creator
+           */
+          $member = SubAccount::where('account_id', '=', $entry['creator_id'])
+                              ->where('member', '=', $username->id)->first();
+          if (!$member) {
+            $this->response['errorMessage'] = 'Sorry, the username \'' . $entry['username'] . '\' is not your member.';
             return $this->response();
           }
 
@@ -122,11 +134,115 @@ class CustomController extends APIController
             'created_at'  => Carbon::now()
           );
 
-          $this->model = new Symptom();
-          $this->insertDB($dataSymptoms, true);
+          array_push($symptomsArr, $dataSymptoms);
         } 
       }
 
+      if (sizeof($symptomsArr) > 0) {
+        Symptom::insert($symptomsArr);
+        $this->response['data'] = sizeof($symptomsArr);
+      } 
+
+      return $this->response();
+    }
+
+    public function importVisitedPlaces(Request $request) {
+      $data = $request->all();
+      $visitedPlacesArr = array();
+      if (sizeof($data['entries']) > 0) {
+        foreach ($data['entries'] as $entry) {
+          /**
+           * check if username exists
+           */
+          $username = Account::where('username', '=', $entry['username'])->first();
+          if (!$username) {
+            $this->response['errorMessage'] = 'Username \'' . $entry['username'] . '\' does not exists';
+            return $this->response();
+          }
+
+          /**
+           * check user if member of creator
+           */
+          $member = SubAccount::where('account_id', '=', $entry['creator_id'])
+                              ->where('member', '=', $username->id)->first();
+          if (!$member) {
+            $this->response['errorMessage'] = 'Sorry, the username \'' . $entry['username'] . '\' is not your member.';
+            return $this->response();
+          }
+
+          /**
+           * get brgy code data
+           */
+          $brgy_code = BrgyCode::where('code', '=', $entry['brgy_code'])->first();
+          if (!$brgy_code) {
+            $this->response['errorMessage'] = 'Barangay code \'' . $entry['brgy_code'] . '\' not found';
+            return $this->response();
+          }
+
+          $visitedPlace = array(
+            'account_id'  => $username->id,
+            'longitude'   => $brgy_code->longitude,
+            'latitude'    => $brgy_code->latitude,
+            'route'       => $brgy_code->route,
+            'locality'    => $brgy_code->locality,
+            'country'     => $brgy_code->country,
+            'region'      => $brgy_code->region,
+            'date'        => $entry['date'],
+            'time'        => $entry['time'],
+            'created_at'  => Carbon::now()
+          );
+
+          array_push($visitedPlacesArr, $visitedPlace);
+        } 
+      }
+
+      if (sizeof($visitedPlacesArr) > 0) {
+        VisitedPlace::insert($visitedPlacesArr);
+        $this->response['data'] = sizeof($visitedPlacesArr);
+      }
+
+      return $this->response();
+    }
+
+    public function setBrgyAddress(Request $request) {
+      $data = $request->all();
+      $prevCode = $data['params']['currentCode'];
+      $this->response['invalidCode'] = false;
+
+      $brgy_code = BrgyCode::where('code', '=', $data['params']['brgyCode'])->first();
+      if (!$brgy_code) {
+        $this->response['invalidCode'] = true;
+        return $this->response();
+      }
+
+      if ($prevCode) {
+        $location = array(
+          'code'        => $data['params']['brgyCode'],
+          'account_id'  => $data['accountId'],
+          'longitude'   => $brgy_code['longitude'],
+          'latitude'    => $brgy_code['latitude'],
+          'route'       => $brgy_code['route'],
+          'locality'    => $brgy_code['locality'],
+          'country'     => $brgy_code['country'],
+          'region'      => $brgy_code['region'],
+          'created_at'  => Carbon::now()
+        );
+        Location::where('account_id', '=', $data['accountId'])->update($location);
+      } else {
+        $location = array(
+          'code'        => $data['params']['brgyCode'],
+          'account_id'  => $data['accountId'],
+          'longitude'   => $brgy_code['longitude'],
+          'latitude'    => $brgy_code['latitude'],
+          'route'       => $brgy_code['route'],
+          'locality'    => $brgy_code['locality'],
+          'country'     => $brgy_code['country'],
+          'region'      => $brgy_code['region'],
+          'created_at'  => Carbon::now()
+        );
+        Location::insert($location);
+      }
+  
       return $this->response();
     }
 
