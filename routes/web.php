@@ -256,3 +256,4 @@ $controller = 'CustomController@';
 Route::post($route.'import_accounts', $controller."importAccounts");
 Route::post($route.'import_symptoms', $controller."importSymptoms");
 Route::post($route.'import_visited_places', $controller."importVisitedPlaces");
+Route::post($route.'set_address', $controller."setBrgyAddress");
