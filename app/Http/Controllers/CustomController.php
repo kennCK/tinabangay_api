@@ -225,7 +225,7 @@ class CustomController extends APIController
           'locality'    => $brgy_code['locality'],
           'country'     => $brgy_code['country'],
           'region'      => $brgy_code['region'],
-          'created_at'  => Carbon::now()
+          'updated_at'  => Carbon::now()
         );
         Location::where('account_id', '=', $data['accountId'])->update($location);
       } else {
