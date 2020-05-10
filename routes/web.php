@@ -257,3 +257,12 @@ Route::post($route.'import_accounts', $controller."importAccounts");
 Route::post($route.'import_symptoms', $controller."importSymptoms");
 Route::post($route.'import_visited_places', $controller."importVisitedPlaces");
 Route::post($route.'set_address', $controller."setBrgyAddress");
+
+//Complaints Controller
+$route = env('PACKAGE_ROUTE', '').'/complaints/';
+$controller = 'ComplaintController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
