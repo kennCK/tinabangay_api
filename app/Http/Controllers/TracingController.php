@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\VisitedPlace;
 use App\Patient;
 use App\UserInformation;
-
+use App\LinkedAccount;
 use App\Account;
 use App\Temperature;
 use App\Ride;
@@ -18,6 +18,14 @@ class TracingController extends APIController
 {
     public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
     public $rideController = 'App\Http\Controllers\RideController';
+
+    /**
+     * flag 0 => start of recursion
+     * flag 1 => recursion running
+     * flag 2 => end of recursion
+     */
+    private $flag = 0;
+    private $linkedAccountsStatus;
 
     public function tree(){
       $placesList = VisitedPlace::with('patients','userInfo')->get();
@@ -64,9 +72,6 @@ class TracingController extends APIController
     }
 
     public function getStatusByAccountId($accountId){
-      /**
-       * PRIORITY LEVEL: patient > visited places > transportation > temperature
-       */
       $radius = env('RADIUS');
       $specified_days = env('SPECIFIED_DAYS');
       if (!isset($radius) || !isset($specified_days)) {
@@ -74,12 +79,14 @@ class TracingController extends APIController
       }
 
       /**
+       * PRIORITY LEVEL: patient > visited places > transportation > temperature
        * Initialize status for all params
        */
       $priorityStatus = array('death','positive','pui','pum','negative');
       $statuses = array(
         'visited_places' => 'negative',
         'transportation' => 'negative',
+        'linked_accounts' => 'negative',
       );
       $now = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
       $specifiedDate = Carbon::now()->subDays(intval($specified_days));
@@ -164,11 +171,76 @@ class TracingController extends APIController
         );
       }
 
+      /**
+       * Check status for linked accounts
+       */
+      if ($this->flag == 0) {
+        $this->linkedAccountsStatus = $this->getLinkedAccountsStatus($accountId);
+      }
+      
+      /**
+       * return status for linked accounts
+       */
+      if ($this->flag == 2) {
+        /**
+         * ===== FOR TESTING =====
+         * 1) uncomment line 191 to return all linked accounts status
+         * 2) comment out line 234 and 238 to loop through all linked accounts
+         */
+
+        // return $this->linkedAccountsStatus;
+        foreach($this->linkedAccountsStatus as $key => $val) {
+          if ($val['status'] === 'positive') {
+            return array(
+              'status' => 'positive',
+              'status_from' => 'linked_accounts',
+              'status_label' => $this->getStatusLabel('positive', 'linked_accounts')
+            );
+          }
+          if (array_search($val['status'], $priorityStatus) < array_search($statuses['linked_accounts'], $priorityStatus)) {
+            $statuses['linked_accounts'] = $val['status'];
+          }
+        }
+
+        if ($statuses['linked_accounts'] !== 'negative') {
+          return array(
+            'status' => $statuses['linked_accounts'],
+            'status_from' => 'linked_accounts',
+            'status_label' => $this->getStatusLabel($statuses['linked_accounts'], 'linked_accounts')
+          );
+        }
+      }
+
       return array(
         'status' => 'negative',
         'status_from' => 'No record',
         'status_label' => $this->getStatusLabel('negative')
       );
+    }
+
+    public function getLinkedAccountsStatus($accountId) {
+      /**
+       * Check flag meaning in line 23-25
+       */
+      $this->flag = 1;
+      $priorityStatus = array('death','positive','pui','pum','negative');
+      $linkedAccounts = LinkedAccount::where('owner', '=', $accountId)->orWhere('account_id', '=', $accountId)->get();
+      if ($linkedAccounts->count() > 0) {
+        $tempArr = array();
+        // loop stops if 'positive' status is found
+        foreach ( $linkedAccounts as $index => $obj) {
+          if ($obj->owner === $accountId) {
+            $tempArr[$index] = $this->getStatusByAccountId($obj->account_id);
+            if ($tempArr[$index]['status'] === 'positive') break;
+          }
+          else if ($obj->account_id === $accountId) {
+            $tempArr[$index] = $this->getStatusByAccountId($obj->owner);
+            if ($tempArr[$index]['status'] === 'positive') break;
+          }
+        }
+        $this->flag = 2;
+        return $tempArr;
+      }
     }
 
     public function getStatusLabel($status, $from = null) {
@@ -182,7 +254,11 @@ class TracingController extends APIController
       );
 
       if ($from === 'patient') {
-        return strtoupper($status). ' PATIENT FOR THE' . strtr($template, $days);
+        return strtoupper($status) . ' PATIENT FOR THE' . strtr($template, $days);
+      }
+
+      if ($from === 'linked_accounts') {
+        return 'IN CONTACT WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
       }
       
       switch ($status) {
