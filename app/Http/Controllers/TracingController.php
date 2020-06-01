@@ -20,6 +20,7 @@ class TracingController extends APIController
     public $rideController = 'App\Http\Controllers\RideController';
 
     /**
+     * ONLY IF THERE ARE LINKED ACCOUNTS
      * flag 0 => start of recursion
      * flag 1 => recursion running
      * flag 2 => end of recursion
