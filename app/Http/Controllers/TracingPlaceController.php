@@ -30,7 +30,7 @@ class TracingPlaceController extends APIController
       ->where('T2.status','=',$data['status'])
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
-      ->select(['T1.*', 'T2.status'])
+      ->select(['T1.*', 'T2.status', 'T2.remarks', 'T2.code'])
       ->get();
     $positiveUser = $positiveUser->groupBy(['route']);
     // $this->response['data'] = $positiveUser;
@@ -91,21 +91,43 @@ class TracingPlaceController extends APIController
         }else{
           foreach ($valuesVisitedPlaces as $keyValue) {
             $patient = Patient::where('id', '=', $keyValue[0]->patient_id)->orderBy('created_at', 'desc')->first();
+
             if($patient){
               switch ($patient->status) {
                 case 'pui':
-                  $pui++;
+                  if($patient->code == null){
+                    $pui += intval($patient->remarks);
+                  }else{
+                    $pui++;
+                  }
                   break;
                 case 'pum':
-                  $pum++;
+                  if($patient->code == null){
+                    $pum += intval($patient->remarks);
+                  }else{
+                    $pum++;
+                  }
                   break; 
                 case 'negative':
-                  $negative++;
+                  if($patient->code == null){
+                    $negative += intval($patient->remarks);
+                  }else{
+                    $negative++;
+                  }
                   break; 
                 case 'recovered':
-                  $recovered++;
+                  if($patient->code == null){
+                    $recovered += intval($patient->remarks);
+                  }else{
+                    $recovered++;
+                  }
+                  break;
                 case 'death':
-                  $death++;
+                  if($patient->code == null){
+                    $death += intval($patient->remarks);
+                  }else{
+                    $death++;
+                  }
                   break; 
               }
             }else{
