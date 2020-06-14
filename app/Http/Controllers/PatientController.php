@@ -106,8 +106,20 @@ class PatientController extends APIController
     if($this->checkAuthenticatedUser(true) == false){
       return $this->response();
     }
+    $totalPositive = 0;
+
+    // positive patients where account_id OR code is not NULL -> 1 count per record
+    $positivePatients = Patient::where('status', '=', 'positive')->whereNotNull('account_id')->orWhereNotNull('code')->count();
+    $totalPositive += $positivePatients;
+
+    // positive patients where account_id AND code is NULL -> count will be based on remarks column value
+    $remarksAsPositiveCounter = Patient::where('status', '=', 'positive')->whereNull('account_id')->whereNull('code')->get();
+    foreach($remarksAsPositiveCounter as $value){
+      $totalPositive += intval($value->remarks);
+    }
+
     $this->response['data'] = array(
-      'positive' => Patient::where('status', '=', 'positive')->count(),
+      'positive' => $totalPositive,
       'pui'     => Patient::where('status', '=', 'pui')->count(),
       'pum'     => Patient::where('status', '=', 'pum')->count(),
       'death'     => Patient::where('status', '=', 'death')->count(),
