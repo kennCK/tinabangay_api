@@ -42,13 +42,14 @@ class LinkedAccountController extends APIController
     $data = $this->response['data'];
     $i = 0;
     foreach ($data as $key) {
-      $status = app($this->tracingController)->getStatusByAccountId($result[$i]['account_id']);
-      $result[$i]['status'] =  $status['status'];
-      $result[$i]['status_from'] =  $status['status_from'];
-      $result[$i]['status_label'] =  $status['status_label'];
-      $result[$i]['account'] = $this->retrieveAccountDetails($result[$i]['account_id']);
+      $status = app($this->tracingController)->getStatusByAccountId($data[$i]['account_id']);
+      $data[$i]['status'] =  $status['status'];
+      $data[$i]['status_from'] =  $status['status_from'];
+      $data[$i]['status_label'] =  $status['status_label'];
+      $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
       $i++;
     }
+    $this->response['data'] = $data;
     return $this->response();
   }
 }
