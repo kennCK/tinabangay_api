@@ -265,7 +265,7 @@ class TracingController extends APIController
       switch ($status) {
         case 'positive':
           if ($from === 'temperature') {
-            return 'HIGH TEMPERATURE IN THE PAST 14 DAYS';
+            return 'HIGH TEMPERATURE IN THE PAST $specified_days DAYS';
           } else {
             return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
           }
