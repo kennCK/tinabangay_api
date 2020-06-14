@@ -131,6 +131,8 @@ class VisitedPlaceController extends APIController
         $data[$i]['status_from'] =  $status['status_from'];
         $data[$i]['status_label'] =  $status['status_label'];
         $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+        $data[$i]['date_human'] = isset($data[$i]['date']) ? $this->daysDiffByDate($data[$i]['date']) : null;
+        $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
         $result[] = $data[$i];
       }
       $i++;
