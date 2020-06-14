@@ -164,9 +164,16 @@ class TracingPlaceController extends APIController
         $this->existAccount[] = $key;
         $counter++;
       }else{
-        $counter += count($value);
         foreach ($value as $keyValue) {
           $this->existPatient[] = $keyValue[0]->patient_id;
+          if ($keyValue[0]->code == null) {
+            // if patient record has no account_id && code
+            // make remarks column value as counter { string -> int }
+            $remarksAsCounter = intval($keyValue[0]->remarks);
+            $counter += $remarksAsCounter;
+          } else {
+            $counter++;
+          }
         }
       }
     }
