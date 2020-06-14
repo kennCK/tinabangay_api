@@ -9,6 +9,7 @@ class VisitedPlaceController extends APIController
 {
   public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
   public $patientController = 'App\Http\Controllers\PatientController';
+  public $tracingController = 'App\Http\Controllers\TracingController';
   
   function __construct(){
     $this->model = new VisitedPlace();
@@ -79,7 +80,7 @@ class VisitedPlaceController extends APIController
         $patient = app($this->patientController)->getStatusByParams('id', intval($key['patient_id']));
         $this->response['data'][$i]['status'] = $patient ? $patient['status'] : null;
         $this->response['data'][$i]['status_label'] = $patient ? $patient['status'] : null;
-          $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;;
+        $this->response['data'][$i]['remarks'] = $patient ? $patient['remarks'] : null;;
       }else{
         $patient = app($this->patientController)->getStatusByParams('account_id', intval($key['account_id']));
         if($patient){
@@ -103,6 +104,38 @@ class VisitedPlaceController extends APIController
       $this->response['data'][$i]['radius'] = $radius;
       $i++;
     }
+    return $this->response();
+  }
+
+  public function retrieveCustomers(Request $request){
+    $data = $request->all();
+
+    $radius = env('RADIUS');
+    if (!isset($radius)) {
+      throw new \Exception('No env variable for "RADIUS"');
+    }
+
+    if (isset($data['radius'])) {
+      $radius = $data['radius'];
+    }
+
+    $this->retrieveDB($data); // store to 
+    $data = $this->response['data'];
+    $i = 0;
+    $result = array();
+    
+    foreach ($data as $key) {
+      if($data[$i]['account_id'] !== null){
+        $status = app($this->tracingController)->getStatusByAccountId($data[$i]['account_id']);
+        $data[$i]['status'] =  $status['status'];
+        $data[$i]['status_from'] =  $status['status_from'];
+        $data[$i]['status_label'] =  $status['status_label'];
+        $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+        $result[] = $data[$i];
+      }
+      $i++;
+    }
+    $this->response['data'] = $result;
     return $this->response();
   }
 
