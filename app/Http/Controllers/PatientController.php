@@ -111,7 +111,7 @@ class PatientController extends APIController
     $search = '%';
     
     if(isset($data['locality'])){
-      $search = $data['locality'] + '%';
+      $search = $data['locality'] .'%';
     }
 
     $totalPositive = 0;
