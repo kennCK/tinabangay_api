@@ -26,6 +26,11 @@ class LinkedAccountController extends APIController
     return $this->response();
   }
 
+  public function getLinkedAccount($column, $value){
+    $result = LinkedAccount::where($column, '=', $value)->get();
+    return sizeof($result) > 0 ? $result[0] : null;
+  }
+
   public function retrieveTracing(Request $request){
     $data = $request->all();
 
