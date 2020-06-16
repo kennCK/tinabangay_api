@@ -44,7 +44,7 @@ class TransportationController extends APIController
         )
       );
       $results[$i]['status'] = $status;
-      $results[$i]['status_label'] = $status != 'negative' ? 'IN CONTACT WITH '.$status.' THE LAST '.env('SPECIFIED_DAYS').'DAYS' : 'CLEAR THE LAST '.env('SPECIFIED_DAYS').' DAYS';
+      $results[$i]['status_label'] = $status != 'negative' ? 'EXPOSED WITH '.$status.' THE LAST '.env('SPECIFIED_DAYS').'DAYS' : 'CLEAR THE LAST '.env('SPECIFIED_DAYS').' DAYS';
       $results[$i]['remarks'] = null;
       $results[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $i++;

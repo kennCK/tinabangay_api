@@ -259,7 +259,7 @@ class TracingController extends APIController
       }
 
       if ($from === 'linked_accounts') {
-        return 'IN CONTACT WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
+        return 'EXPOSED WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
       }
       
       switch ($status) {
@@ -267,12 +267,12 @@ class TracingController extends APIController
           if ($from === 'temperature') {
             return 'HIGH TEMPERATURE IN THE PAST $specified_days DAYS';
           } else {
-            return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
+            return 'EXPOSED WITH POSITIVE' . strtr($template, $days);
           }
         case 'pui':
-          return 'IN CONTACT WITH PUI' . strtr($template, $days);
+          return 'EXPOSED WITH PUI' . strtr($template, $days);
         case 'pum':
-          return 'IN CONTACT WITH PUM' . strtr($template, $days);
+          return 'EXPOSED WITH PUM' . strtr($template, $days);
         default:
           return 'CLEARED THE' . strtr($template, $days);
       }
