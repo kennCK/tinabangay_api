@@ -31,6 +31,6 @@ class Alert extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->subject('SCANNED USER ALERT')->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'))->view('email.alert');
     }
 }
