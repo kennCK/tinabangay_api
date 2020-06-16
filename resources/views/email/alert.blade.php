@@ -7,7 +7,7 @@
         New scanned user was exposed!
     <br>
     <br>
-        Scanned on {{$data}}
+        Scanned on {{$date}}
 </span>
 @component('email.footer')
 @endcomponent
