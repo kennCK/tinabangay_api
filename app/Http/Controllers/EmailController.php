@@ -10,12 +10,9 @@ use App\Mail\Referral;
 use App\Mail\LoginEmail;
 use App\Mail\OtpEmail;
 use App\Mail\NotifyReferrer;
-use App\Mail\Receipt;
-use App\Mail\NewMessage;
-use App\Mail\Ledger;
-use App\Mail\Deposit;
 use App\Mail\Alert;
 use Illuminate\Http\Request;
+use App\Jobs\Notifications;
 
 class EmailController extends APIController
 {
@@ -105,16 +102,6 @@ class EmailController extends APIController
         return $this->response();
     }
 
-    public function newMessage($accountId){
-        $online = app('Increment\Account\Http\AccountOnlineController')->getStatus($accountId);
-        $user = $this->retrieveAccountDetails($accountId);
-        if($user != null && $online == false){
-            Mail::to($user['email'])->send(new NewMessage($user, $this->response['timezone']));
-            return true;
-        }
-        return false;
-    }
-
     public function trial(Request $request){
         $data = $request->all();
         $user = $this->retrieveAccountDetails($data['account_id']);
@@ -130,6 +117,7 @@ class EmailController extends APIController
         $user = $this->retrieveAccountDetails($data['account_id']);
         if($user != null){
             Mail::to($user['email'])->send(new Alert($user, $this->response['timezone']));
+            Notifications::dispatch('notifications', $user->toArray());
             $this->response['data'] = true;
         }
         return $this->response();
