@@ -91,6 +91,7 @@ Route::post($route.'/verification', 'EmailController@verification');
 Route::post($route.'/changed_password', 'EmailController@changedPassword');
 Route::post($route.'/referral', 'EmailController@referral');
 Route::post($route.'/trial', 'EmailController@trial');
+Route::post($route.'/alert', 'EmailController@alert');
 Route::post($route.'/test_sms', 'EmailController@testSMS');
 
 //Notification Settings Controller

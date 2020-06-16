@@ -14,6 +14,7 @@ use App\Mail\Receipt;
 use App\Mail\NewMessage;
 use App\Mail\Ledger;
 use App\Mail\Deposit;
+use App\Mail\Alert;
 use Illuminate\Http\Request;
 
 class EmailController extends APIController
@@ -104,24 +105,6 @@ class EmailController extends APIController
         return $this->response();
     }
 
-    public function receipt($accountId, $data){
-        $user = $this->retrieveAccountDetails($accountId);
-        if($user != null && sizeof($data) > 0){
-            Mail::to($user['email'])->send(new Receipt($user, $data[0], $this->response['timezone']));
-            return true;
-        }
-        return false;
-    }
-
-    public function ledger($accountId, $details, $subject){
-        $user = $this->retrieveAccountDetails($accountId);
-        if($user != null){
-            Mail::to($user['email'])->send(new Ledger($user, $details, $subject, $this->response['timezone']));
-            return true;
-        }
-        return false;
-    }
-
     public function newMessage($accountId){
         $online = app('Increment\Account\Http\AccountOnlineController')->getStatus($accountId);
         $user = $this->retrieveAccountDetails($accountId);
@@ -142,24 +125,14 @@ class EmailController extends APIController
         return $this->response();
     }
 
-
-    public function investment($accountId, $details, $subject){
-        $user = $this->retrieveAccountDetails($accountId);
+    public function alert(Request $request){
+        $data = $request->all();
+        $user = $this->retrieveAccountDetails($data['account_id']);
         if($user != null){
-            Mail::to($user['email'])->send(new Ledger($user, $details, $subject, $this->response['timezone']));
-            return true;
+            Mail::to($user['email'])->send(new Alert($user, $this->response['timezone']));
+            $this->response['data'] = true;
         }
-        return false;
-    }
-
-    public function deposit($accountId, $details, $subject){
-        $this->localization();
-        $user = $this->retrieveAccountDetails($accountId);
-        if($user != null){
-            Mail::to($user['email'])->send(new Deposit($user, $details, $subject, $this->response['timezone']));
-            return true;
-        }
-        return false;
+        return $this->response();
     }
 
     public function testSMS(Request $request){
