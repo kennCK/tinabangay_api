@@ -1,10 +1,13 @@
 @component('email.header')
 @endcomponent
 <span class="text">
-    <h3>{{env('APP_NAME')}} Invitation</h3>
-    Hello {{$toEmail}}!
+    <h3>{{env('APP_NAME')}} Alert!</h3>
     <br>
     <br>
+        New scanned user was exposed!
+    <br>
+    <br>
+        Scanned on {{$data}}
 </span>
 @component('email.footer')
 @endcomponent
