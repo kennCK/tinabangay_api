@@ -16,7 +16,6 @@ class CreateConsentsTable extends Migration
         Schema::create('consents', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('account_id');
-            $table->string('status');
             $table->timestamps();
             $table->softDeletes();
         });
