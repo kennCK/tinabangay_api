@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateConsentsTable extends Migration
+class CreateHealthDeclarationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateConsentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('consents', function (Blueprint $table) {
+        Schema::create('health_declarations', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('owner');
             $table->bigInteger('account_id');
+            $table->longText('content');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +30,6 @@ class CreateConsentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consents');
+        Schema::dropIfExists('health_declarations');
     }
 }
