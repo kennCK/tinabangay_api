@@ -28,7 +28,7 @@ class TracingPlaceController extends APIController
           ->orOn('T1.patient_id', '=', 'T2.id')->whereNotNull('T1.patient_id');
        })
       ->where('T2.status','=',$data['status'])
-      ->where('T1.locality','like', $data['locality'])
+      ->where('T1.locality','like', (isset($data['locality']) ? $data['locality'] : '%'))
       ->whereNull('T2.deleted_at')
       ->whereNull('T1.deleted_at')
       ->select(['T1.*', 'T2.status', 'T2.remarks', 'T2.code'])
