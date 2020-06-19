@@ -37,6 +37,23 @@ class HealthDeclarationController extends APIController
     return $this->response();
   }
 
+  public function update(Request $request){
+    $data = $request->all();
+    $this->updateDB($data);
+    if($this->response['data'] == true){
+      $notification = array(
+        'from'          => $data['account_id'],
+        'to'            => $data['owner'],
+        'payload'       => 'form_submitted',
+        'payload_value' => $data['id'],
+        'route'         => '/form/'.$data['code'],
+        'created_at'    => Carbon::now()
+      );
+      app($this->notificationClass)->createByParams($notification);
+    }
+    return $this->response();
+  }
+
   public function generateCode(){
     $code = 'HDF-'.substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), 0, 60);
     $codeExist = HealthDeclaration::where('code', '=', $code)->get();
