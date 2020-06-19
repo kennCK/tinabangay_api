@@ -12,7 +12,10 @@ class HealthDeclarationController extends APIController
 
   public function create(Request $request){
     $data = $request->all();
-    $data['code'] = 
+    $data['code'] = $this->generateCode();
+    $this->model = new HealthDeclaration();
+    $this->insertDB($data);
+    return $this->response();
   }
 
   public function generateCode(){
