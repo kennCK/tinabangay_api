@@ -173,6 +173,7 @@ return [
         Increment\Common\Invitation\InvitationServiceProvider::class,
         Increment\Common\Image\ImageServiceProvider::class,
         Increment\Common\System\SystemNotificationServiceProvider::class,
+        Increment\Common\Notification\NotificationServiceProvider::class,
         /*
          * Application Service Providers...
          */
