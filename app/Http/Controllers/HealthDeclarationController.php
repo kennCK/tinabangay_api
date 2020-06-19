@@ -8,6 +8,9 @@ class HealthDeclarationController extends APIController
 {
   function __construct(){
     $this->model = new HealthDeclaration();
+    $this->notRequired = array(
+      'content'
+    );
   }
 
   public function create(Request $request){
