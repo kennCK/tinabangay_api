@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\VisitedPlace;
-use App\Patient;
+use App\Account;
 use App\UserInformation;
 use App\LinkedAccount;
-use App\Account;
-use App\Temperature;
+use App\Patient;
+use App\VisitedPlace;
+use App\Location;
 use App\Ride;
+use App\Temperature;
 
 use DB;
 use Carbon\Carbon;
@@ -18,13 +19,6 @@ class TracingController extends APIController
 {
     public $tracingPlaceController = 'App\Http\Controllers\TracingPlaceController';
     public $rideController = 'App\Http\Controllers\RideController';
-
-    /**
-     * ONLY IF THERE ARE LINKED ACCOUNTS
-     * flag 0 => start of recursion
-     * flag 1 => recursion running
-     * flag 2 => end of recursion
-     */
     private $flag = 0;
     private $linkedAccountsStatus;
 
@@ -86,6 +80,7 @@ class TracingController extends APIController
       $priorityStatus = array('death','positive','pui','pum','negative');
       $statuses = array(
         'visited_places' => 'negative',
+        'location' => 'negative',
         'transportation' => 'negative',
         'linked_accounts' => 'negative',
       );
@@ -129,6 +124,27 @@ class TracingController extends APIController
             'status' => $statuses['visited_places'],
             'status_from' => 'visited_places',
             'status_label' => $this->getStatusLabel($statuses['visited_places'], 'visited_places')
+          );
+        }
+      }
+
+      /**
+       * Check status location
+       */
+      $locationRecord = Location::where('account_id', '=', $accountId)->whereNotNull('code')->get();
+      if ($locationRecord->count() > 0) {
+        foreach ($locationRecord as $record) {
+          $location_status = app($this->tracingPlaceController)->getStatus($record, $radius);
+          if (array_search($location_status, $priorityStatus) < array_search($statuses['location'], $priorityStatus)) {
+            $statuses['location'] = $location_status;
+          }
+        }
+
+        if ($statuses['location'] !== 'negative') {
+          return array(
+            'status' => $statuses['location'],
+            'status_from' => 'location',
+            'status_label' => $this->getStatusLabel($statuses['location'], 'location')
           );
         }
       }
@@ -183,13 +199,6 @@ class TracingController extends APIController
        * return status for linked accounts
        */
       if ($this->flag == 2) {
-        /**
-         * ===== FOR TESTING =====
-         * 1) uncomment line 191 to return all linked accounts status
-         * 2) comment out line 234 and 238 to loop through all linked accounts
-         */
-
-        // return $this->linkedAccountsStatus;
         foreach($this->linkedAccountsStatus as $key => $val) {
           if ($val['status'] === 'positive') {
             return array(
@@ -221,7 +230,9 @@ class TracingController extends APIController
 
     public function getLinkedAccountsStatus($accountId) {
       /**
-       * Check flag meaning in line 23-25
+       * flag 0 => start of recursion
+       * flag 1 => recursion running
+       * flag 2 => end of recursion
        */
       $this->flag = 1;
       $priorityStatus = array('death','positive','pui','pum','negative');
@@ -246,35 +257,21 @@ class TracingController extends APIController
 
     public function getStatusLabel($status, $from = null) {
       $specified_days = env('SPECIFIED_DAYS');
-      if (!isset($specified_days)) {
-        throw new \Exception('No env variable for "SPECIFIED_DAYS');
-      }
+      if (!isset($specified_days)) throw new \Exception('No env variable for "SPECIFIED_DAYS');
       $template = ' LAST $days DAYS';
-      $days = array(
-        '$days' => $specified_days
-      );
+      $days = array('$days' => $specified_days);
 
-      if ($from === 'patient') {
-        return strtoupper($status) . ' PATIENT FOR THE' . strtr($template, $days);
-      }
-
-      if ($from === 'linked_accounts') {
-        return 'IN CONTACT WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
-      }
+      if ($from === 'patient') return strtoupper($status) . ' PATIENT FOR THE' . strtr($template, $days);
+      if ($from === 'location') return 'LOCATION HAS ' . strtoupper($status) . ' PATIENT';
+      if ($from === 'linked_accounts') return 'IN CONTACT WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
+      if ($from === 'temperature') return 'HIGH TEMPERATURE FOR THE' . strtr($template, $days);
       
       switch ($status) {
-        case 'positive':
-          if ($from === 'temperature') {
-            return 'HIGH TEMPERATURE IN THE PAST $specified_days DAYS';
-          } else {
-            return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
-          }
-        case 'pui':
-          return 'IN CONTACT WITH PUI' . strtr($template, $days);
-        case 'pum':
-          return 'IN CONTACT WITH PUM' . strtr($template, $days);
-        default:
-          return 'CLEARED THE' . strtr($template, $days);
+        case 'positive': return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
+        case 'pui': return 'IN CONTACT WITH PUI' . strtr($template, $days);
+        case 'pum': return 'IN CONTACT WITH PUM' . strtr($template, $days);
+        case 'death': return 'POSITIVE PATIENT DIED' . strtr($template, $days);
+        default: return 'CLEARED THE' . strtr($template, $days);
       }
     }
 }
