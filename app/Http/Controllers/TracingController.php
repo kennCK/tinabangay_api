@@ -263,13 +263,13 @@ class TracingController extends APIController
 
       if ($from === 'patient') return strtoupper($status) . ' PATIENT FOR THE' . strtr($template, $days);
       if ($from === 'location') return 'LOCATION HAS ' . strtoupper($status) . ' PATIENT';
-      if ($from === 'linked_accounts') return 'IN CONTACT WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
+      if ($from === 'linked_accounts') return 'EXPOSED WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
       if ($from === 'temperature') return 'HIGH TEMPERATURE FOR THE' . strtr($template, $days);
       
       switch ($status) {
-        case 'positive': return 'IN CONTACT WITH POSITIVE' . strtr($template, $days);
-        case 'pui': return 'IN CONTACT WITH PUI' . strtr($template, $days);
-        case 'pum': return 'IN CONTACT WITH PUM' . strtr($template, $days);
+        case 'positive': return 'EXPOSED WITH POSITIVE' . strtr($template, $days);
+        case 'pui': return 'EXPOSED WITH PUI' . strtr($template, $days);
+        case 'pum': return 'EXPOSED WITH PUM' . strtr($template, $days);
         case 'death': return 'POSITIVE PATIENT DIED' . strtr($template, $days);
         default: return 'CLEARED THE' . strtr($template, $days);
       }
