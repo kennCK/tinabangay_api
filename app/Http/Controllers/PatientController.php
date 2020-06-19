@@ -120,12 +120,7 @@ class PatientController extends APIController
 
     // patients where account_id OR code is not NULL -> 1 count per record
     $positivePatients = Patient::where('status', '=', 'positive')
-<<<<<<< HEAD
                                ->where( function($record) { 
-=======
-                                ->where('locality', 'like', $search)
-                                ->where( function($record) { 
->>>>>>> 1f53f85078ad7849f724fc5b9d76d6be20d24b13
                                     return $record->whereNotNull('account_id')->orWhereNotNull('code');
                                   })
                                ->count();
