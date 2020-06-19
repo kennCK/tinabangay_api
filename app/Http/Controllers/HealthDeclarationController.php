@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\HealthDeclaration;
+use Carbon\Carbon;
 class HealthDeclarationController extends APIController
 {
+
+  public $notificationClass = 'Increment\Common\Notification\Http\NotificationController';
+
   function __construct(){
     $this->model = new HealthDeclaration();
     $this->notRequired = array(
@@ -18,6 +22,18 @@ class HealthDeclarationController extends APIController
     $data['code'] = $this->generateCode();
     $this->model = new HealthDeclaration();
     $this->insertDB($data);
+    if($this->response['data'] > 0){
+      // send notification
+      $notification = array(
+        'from'          => $data['owner'],
+        'to'            => $data['account_id'],
+        'payload'       => 'form_request',
+        'payload_value' => $this->response['data'],
+        'route'         => '/form/'.$data['code'],
+        'created_at'    => Carbon::now()
+      );
+      app($this->notificationClass)->createByParams($notification);
+    }
     return $this->response();
   }
 
