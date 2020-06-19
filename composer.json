@@ -45,7 +45,8 @@
             "Increment\\Messenger\\": "packages/increment/messenger/src/",
             "Increment\\Common\\Notification\\": "packages/increment/common/notification/src/",
             "Increment\\Account\\": "packages/increment/account/src/",
-            "Increment\\Payment\\": "packages/increment/payment/src/"
+            "Increment\\Payment\\": "packages/increment/payment/src/",
+            "Increment\\Imarket\\Merchant\\": "packages/increment/imarket/merchant/src/"
         }
     },
     "autoload-dev": {

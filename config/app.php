@@ -174,6 +174,7 @@ return [
         Increment\Common\Image\ImageServiceProvider::class,
         Increment\Common\System\SystemNotificationServiceProvider::class,
         Increment\Common\Notification\NotificationServiceProvider::class,
+        Increment\Imarket\Merchant\MerchantServiceProvider::class,
         /*
          * Application Service Providers...
          */
