@@ -9,6 +9,7 @@ class HealthDeclarationController extends APIController
 {
 
   public $notificationClass = 'Increment\Common\Notification\Http\NotificationController';
+  public $merchantClass = 'Increment\Imarket\Merchant\Http\MerchantController';
 
   function __construct(){
     $this->model = new HealthDeclaration();
@@ -33,6 +34,20 @@ class HealthDeclarationController extends APIController
         'created_at'    => Carbon::now()
       );
       app($this->notificationClass)->createByParams($notification);
+    }
+    return $this->response();
+  }
+
+  public function retrieve(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data);
+    if(sizeof($this->response['data']) > 0){
+      $i = 0;
+      $result = $this->response['data'];
+      foreach ($result as $key) {
+        $this->response['data'][$i]['merchant'] = app($this->merchantClass)->getByParams('account_id', $result[$i]['owner']);
+        $i++;
+      }
     }
     return $this->response();
   }
