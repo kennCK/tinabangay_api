@@ -8,9 +8,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Events\Notifications as EventNotifications;
-use App\Events\Message;
-use App\Events\MessageGroup;
-use App\Events\SystemNotification;
 use Pusher\Pusher;
 class Notifications implements ShouldQueue
 {
@@ -50,17 +47,8 @@ class Notifications implements ShouldQueue
     public function handle()
     {
         switch ($this->type) {
-            case 'message_group':
-                broadcast(new MessageGroup($this->data));
-                break;
             case 'notifications':
                 broadcast(new EventNotifications($this->data));
-                break;
-            case 'message':
-                broadcast(new Message($this->data));
-                break;
-            case 'system_notification':
-                broadcast(new SystemNotification($this->data));
                 break;
             default:
                 # code...

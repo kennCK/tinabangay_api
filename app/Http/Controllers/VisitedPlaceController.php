@@ -90,7 +90,7 @@ class VisitedPlaceController extends APIController
         }else{
           $status = app($this->tracingPlaceController)->getStatus($data[$i], floatval($radius));
           $this->response['data'][$i]['status'] = $status;
-          $this->response['data'][$i]['status_label'] = $status != 'negative' ? 'IN CONTACT WITH '.$status.' THE LAST '.env('SPECIFIED_DAYS').'DAYS' : 'CLEAR THE LAST '.env('SPECIFIED_DAYS').' DAYS';
+          $this->response['data'][$i]['status_label'] = $status != 'negative' ? 'EXPOSED WITH '.$status.' THE LAST '.env('SPECIFIED_DAYS').'DAYS' : 'CLEAR THE LAST '.env('SPECIFIED_DAYS').' DAYS';
           $this->response['data'][$i]['remarks'] = null;
         }
       }

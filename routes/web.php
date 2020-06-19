@@ -91,6 +91,7 @@ Route::post($route.'/verification', 'EmailController@verification');
 Route::post($route.'/changed_password', 'EmailController@changedPassword');
 Route::post($route.'/referral', 'EmailController@referral');
 Route::post($route.'/trial', 'EmailController@trial');
+Route::post($route.'/alert', 'EmailController@alert');
 Route::post($route.'/test_sms', 'EmailController@testSMS');
 
 //Notification Settings Controller
@@ -263,6 +264,24 @@ Route::post($route.'set_address', $controller."setBrgyAddress");
 //Complaints Controller
 $route = env('PACKAGE_ROUTE', '').'/complaints/';
 $controller = 'ComplaintController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Consent Controller
+$route = env('PACKAGE_ROUTE', '').'/consents/';
+$controller = 'ConsentController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//Consent Controller
+$route = env('PACKAGE_ROUTE', '').'/health_declarations/';
+$controller = 'HealthDeclarationController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
 Route::post($route.'update', $controller."update");

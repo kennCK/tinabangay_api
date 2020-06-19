@@ -103,25 +103,40 @@ class PatientController extends APIController
   }
 
   public function summary(Request $request){
+    $data = $request->all();
     if($this->checkAuthenticatedUser(true) == false){
       return $this->response();
     }
+
+    $search = '%';
+    
+    if(isset($data['locality'])){
+      $search = $data['locality'] .'%';
+    }
+
     $totalPositive = 0;
     $totalDeath = 0;
     $totalRecovered = 0;
 
     // patients where account_id OR code is not NULL -> 1 count per record
     $positivePatients = Patient::where('status', '=', 'positive')
+<<<<<<< HEAD
                                ->where( function($record) { 
+=======
+                                ->where('locality', 'like', $search)
+                                ->where( function($record) { 
+>>>>>>> 1f53f85078ad7849f724fc5b9d76d6be20d24b13
                                     return $record->whereNotNull('account_id')->orWhereNotNull('code');
                                   })
                                ->count();
     $deathPatients = Patient::where('status', '=', 'death')
+                            ->where('locality', 'like', $search)
                             ->where(function($record){
                                 return $record->whereNotNull('account_id')->orWhereNotNull('code');
                               })
                             ->count();
     $recoveredPatients = Patient::where('status', '=', 'recovered')
+                                ->where('locality', 'like', $search)
                                 ->where(function($record){
                                     return $record->whereNotNull('account_id')->orWhereNotNull('code');
                                   })
@@ -132,9 +147,18 @@ class PatientController extends APIController
     $totalRecovered += $recoveredPatients;
 
     // patients where account_id AND code is NULL -> count will be based on remarks column value
-    $remarksAsPositiveCounter = Patient::where('status', '=', 'positive')->whereNull('account_id')->whereNull('code')->get();
-    $remarksAsDeathCounter = Patient::where('status', '=', 'death')->whereNull('account_id')->whereNull('code')->get();
-    $remarksAsRecoveredCounter = Patient::where('status', '=', 'recovered')->whereNull('account_id')->whereNull('code')->get();
+    $remarksAsPositiveCounter = Patient::where('status', '=', 'positive')
+                                ->where('locality', 'like', $search)
+                                ->whereNull('account_id')
+                                ->whereNull('code')->get();
+    $remarksAsDeathCounter = Patient::where('status', '=', 'death')
+                                ->where('locality', 'like', $search)
+                                ->whereNull('account_id')
+                                ->whereNull('code')->get();
+    $remarksAsRecoveredCounter = Patient::where('status', '=', 'recovered')
+                                ->where('locality', 'like', $search)
+                                ->whereNull('account_id')
+                                ->whereNull('code')->get();
     if (count($remarksAsPositiveCounter)) {
       foreach($remarksAsPositiveCounter as $record){
         $totalPositive += intval($record->remarks);
