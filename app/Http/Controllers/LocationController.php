@@ -37,4 +37,13 @@ class LocationController extends APIController
     $result = Location::where($column, '=', $value)->where('code', '!=', null)->get();
     return sizeof($result) > 0 ? $result[0] : null;
   }
+
+  public function getAssignedLocation($column, $value){
+    $result = Location::where($column, '=', $value)->where('assigned_code', '!=', null)->get();
+    if(sizeof($result) > 0){
+      $newResult = Location::where('code', '=', $result[0]['assigned_code'])->get();
+      return sizeof($newResult) > 0 ? $newResult[0] : null;
+    }
+    return null;
+  }
 }
