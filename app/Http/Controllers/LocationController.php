@@ -9,7 +9,7 @@ class LocationController extends APIController
   function __construct(){
     $this->model = new Location();
     $this->notRequired = array(
-      'code'
+      'code', 'assigned_code', 'payload', 'longitude', 'latitude', 'route', 'locality', 'country', 'region'
     );
   }
 
