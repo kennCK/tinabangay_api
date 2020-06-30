@@ -20,7 +20,7 @@ class LinkedAccountController extends APIController
       $data[$i]['owner_account'] = $this->retrieveAccountDetails($key['owner']);
       $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
-      $data[$i]['linked_account'] = $this->getLinkedAccount('account_id', $key['account_id']);
+      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
       $i++;
     }
     $this->response['data'] = $data;
