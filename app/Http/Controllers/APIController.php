@@ -606,10 +606,7 @@ class APIController extends Controller
     $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($accountId);
     $result['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
     $result['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $accountId);
-    $result['linked_account'] = null;
-    if($result['account_type'] == 'TEMP_SCANNER'){
-      $result['linked_account'] = app('App\Http\Controllers\LinkedAccountController')->getLinkedAccount('account_id', $accountId);
-    }
+    $result['linked_account'] = app('App\Http\Controllers\LinkedAccountController')->getLinkedAccount('account_id', $accountId);
     return $result;
   }
 
