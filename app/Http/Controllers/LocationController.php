@@ -42,6 +42,9 @@ class LocationController extends APIController
     $result = Location::where($column, '=', $value)->where('assigned_code', '!=', null)->where('payload', '=', 'business')->get();
     if(sizeof($result) > 0){
       $newResult = Location::where('code', '=', $result[0]['assigned_code'])->get();
+      if(sizeof($newResult) > 0){
+        $newResult[0]['id'] = $result[0]['id'];
+      }
       return sizeof($newResult) > 0 ? $newResult[0] : null;
     }
     return null;
