@@ -26,8 +26,8 @@ class HealthDeclarationController extends APIController
     if($this->response['data'] > 0){
       // send notification
       $notification = array(
-        'from'          => $data['owner'],
-        'to'            => $data['account_id'],
+        'from'          => $data['from'],
+        'to'            => $data['to'],
         'payload'       => 'form_request',
         'payload_value' => $this->response['data'],
         'route'         => '/form/'.$data['code'],
@@ -57,8 +57,8 @@ class HealthDeclarationController extends APIController
     $this->updateDB($data);
     if($this->response['data'] == true){
       $notification = array(
-        'from'          => $data['account_id'],
-        'to'            => $data['owner'],
+        'from'          => $data['frpm'],
+        'to'            => $data['to'],
         'payload'       => 'form_submitted',
         'payload_value' => $data['id'],
         'route'         => '/form/'.$data['code'],
