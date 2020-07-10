@@ -57,7 +57,7 @@ class HealthDeclarationController extends APIController
     $this->updateDB($data);
     if($this->response['data'] == true){
       $notification = array(
-        'from'          => $data['frpm'],
+        'from'          => $data['from'],
         'to'            => $data['to'],
         'payload'       => 'form_submitted',
         'payload_value' => $data['id'],
