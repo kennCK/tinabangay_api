@@ -34,7 +34,7 @@ class LocationController extends APIController
   }
 
   public function getByParamsWithCode($column, $value){
-    $result = Location::where($column, '=', $value)->where('code', '!=', null)->where('payload', '=', 'brgy')->get();
+    $result = Location::where($column, '=', $value)->whereNotNull('code')->get();
     return sizeof($result) > 0 ? $result[0] : null;
   }
 
