@@ -28,7 +28,7 @@ class HealthDeclarationController extends APIController
       $notification = array(
         'from'          => $data['from'],
         'to'            => $data['to'],
-        'payload'       => 'form_request',
+        'payload'       => isset($data['payload']) ? $data['payload'] ? 'form_request/customer',
         'payload_value' => $this->response['data'],
         'route'         => '/form/'.$data['code'],
         'created_at'    => Carbon::now()
@@ -59,7 +59,7 @@ class HealthDeclarationController extends APIController
       $notification = array(
         'from'          => $data['frpm'],
         'to'            => $data['to'],
-        'payload'       => 'form_submitted',
+        'payload'       => isset($data['payload']) ? $data['payload'] ? 'form_submitted/customer',
         'payload_value' => $data['id'],
         'route'         => '/form/'.$data['code'],
         'created_at'    => Carbon::now()
