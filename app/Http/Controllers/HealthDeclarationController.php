@@ -54,10 +54,11 @@ class HealthDeclarationController extends APIController
 
   public function update(Request $request){
     $data = $request->all();
+
     $this->updateDB($data);
     if($this->response['data'] == true){
       $notification = array(
-        'from'          => $data['frpm'],
+        'from'          => $data['from'],
         'to'            => $data['to'],
         'payload'       => isset($data['payload']) ? $data['payload'] ? 'form_submitted/customer',
         'payload_value' => $data['id'],
