@@ -35,10 +35,9 @@ class HealthDeclarationController extends APIController
       'created_at'  => Carbon::now(),
       'updated_at'  => $updatedAt
     );
-    
+
     $this->response['data'] = HealthDeclaration::insertGetId($params);
 
-    $this->insertDB($data);
     if($this->response['data'] > 0){
       // send notification
       $notification = array(
