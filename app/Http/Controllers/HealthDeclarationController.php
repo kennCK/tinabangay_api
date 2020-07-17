@@ -20,14 +20,6 @@ class HealthDeclarationController extends APIController
 
   public function create(Request $request){
     $data = $request->all();
-
-    // FOR HEALTH DECLARATION FORMAT
-    $health_dec_format = null;
-    $health_dec_content = json_decode($data['content']);
-    if (isset($health_dec_content) && isset($health_dec_content->format)) {
-      $health_dec_format = $health_dec_content->format;
-    }
-
     $data['code'] = $this->generateCode();
     $this->model = new HealthDeclaration();
     $this->insertDB($data);
@@ -36,7 +28,7 @@ class HealthDeclarationController extends APIController
       $notification = array(
         'from'          => $data['from'],
         'to'            => $data['to'],
-        'payload'       => 'form_request/'.$health_dec_format,
+        'payload'       => isset($data['payload']) ? $data['payload'] : 'form_request/customer',
         'payload_value' => $this->response['data'],
         'route'         => '/form/'.$data['code'],
         'created_at'    => Carbon::now()
@@ -63,19 +55,12 @@ class HealthDeclarationController extends APIController
   public function update(Request $request){
     $data = $request->all();
 
-    // FOR HEALTH DECLARATION FORMAT
-    $health_dec_format = null;
-    $health_dec_content = json_decode($data['content']);
-    if (isset($health_dec_content) && isset($health_dec_content->format)) {
-      $health_dec_format = $health_dec_content->format;
-    }
-
     $this->updateDB($data);
     if($this->response['data'] == true){
       $notification = array(
         'from'          => $data['from'],
         'to'            => $data['to'],
-        'payload'       => 'form_submitted/'.$health_dec_format,
+        'payload'       => isset($data['payload']) ? $data['payload'] : 'form_submitted/customer',
         'payload_value' => $data['id'],
         'route'         => '/form/'.$data['code'],
         'created_at'    => Carbon::now()
