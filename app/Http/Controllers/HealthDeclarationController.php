@@ -21,7 +21,23 @@ class HealthDeclarationController extends APIController
   public function create(Request $request){
     $data = $request->all();
     $data['code'] = $this->generateCode();
-    $this->model = new HealthDeclaration();
+    $updatedAt = null;
+
+    if(isset($data['payload']) && ($data['payload'] == 'form_submitted/customer'|| $data['payload'] == 'form_submitted/employee_checkin' || $data['payload'] == 'form_submitted/employee_checkout')){
+      $updatedAt = Carbon::now();
+    }
+
+    $params = array(
+      'owner'       => $data['owner'],
+      'account_id'  => $data['account_id'],
+      'content'     => $data['content'],
+      'code'        => $data['code'],
+      'created_at'  => Carbon::now(),
+      'updated_at'  => $updatedAt
+    );
+    
+    $this->response['data'] = HealthDeclaration::insertGetId($params);
+
     $this->insertDB($data);
     if($this->response['data'] > 0){
       // send notification
