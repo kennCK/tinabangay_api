@@ -8,6 +8,6 @@ class BrgyCodeController extends APIController
 {
   function __construct(){
     $this->model = new BrgyCode();
-    $this->notRequired = array('url');
+    $this->notRequired = array('url', 'brgy_code');
   }
 }
