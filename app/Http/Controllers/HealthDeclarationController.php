@@ -50,6 +50,8 @@ class HealthDeclarationController extends APIController
       );
       app($this->notificationClass)->createByParams($notification);
     }
+
+    $this->response['generated_code'] = $data['code'];
     return $this->response();
   }
 
@@ -86,6 +88,7 @@ class HealthDeclarationController extends APIController
   }
 
   public function generateCode(){
+    // dont include '/' in str_shuffle
     $code = 'HDF-'.substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), 0, 60);
     $codeExist = HealthDeclaration::where('code', '=', $code)->get();
     if(sizeof($codeExist) > 0){
