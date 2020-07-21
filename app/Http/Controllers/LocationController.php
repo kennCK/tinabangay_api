@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Location;
+use App\BrgyCode;
 class LocationController extends APIController
 {
   function __construct(){
@@ -20,6 +21,20 @@ class LocationController extends APIController
     }
     $this->model = new Location();
     $this->insertDB($data);
+    return $this->response();
+  }
+
+  public function retrieve(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data);
+    if(sizeof($this->response['data']) > 0){
+      $i = 0;
+      $result = $this->response['data'];
+      foreach ($result as $key) {
+        $this->response['data'][$i]['brgy_info'] = BrgyCode::where('brgy_code', '=', $key['assigned_code'])->whereNotNull('brgy_code')->first();
+        $i++;
+      }
+    }
     return $this->response();
   }
 
