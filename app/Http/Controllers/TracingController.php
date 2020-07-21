@@ -261,11 +261,13 @@ class TracingController extends APIController
       $template = ' LAST $days DAYS';
       $days = array('$days' => $specified_days);
 
-      if ($from === 'patient') return strtoupper($status) . ' PATIENT FOR THE' . strtr($template, $days);
-      if ($from === 'location') return 'LOCATION HAS ' . strtoupper($status) . ' PATIENT';
-      if ($from === 'linked_accounts') return 'EXPOSED WITH ' . strtoupper($status) . ' LINKED ACCOUNT' . strtr($template, $days);
-      if ($from === 'temperature') return 'HIGH TEMPERATURE FOR THE' . strtr($template, $days);
-      
+      if ($from === 'patient') return strtoupper($status) . ' PATIENT IN THE' . strtr($template, $days);
+      if ($from === 'visited_places') return 'VISITED A POSSIBLY CONTAMINATED AREA IN THE' . strtr($template, $days);
+      if ($from === 'location') return 'LOCATION HAS ' . strtoupper($status) . ' IN THE' . strtr($template, $days);
+      if ($from === 'transportation') return 'USED A POSSIBLY CONTAMINATED VEHICLE IN THE' . strtr($template, $days);
+      if ($from === 'temperature') return 'HIGH TEMPERATURE IN THE' . strtr($template, $days);
+      if ($from === 'linked_accounts') return 'HAS ' . strtoupper($status) . ' LINKED ACCOUNT IN THE' . strtr($template, $days);
+
       switch ($status) {
         case 'positive': return 'EXPOSED WITH POSITIVE' . strtr($template, $days);
         case 'pui': return 'EXPOSED WITH PUI' . strtr($template, $days);
