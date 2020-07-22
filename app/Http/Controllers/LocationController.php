@@ -31,7 +31,7 @@ class LocationController extends APIController
       $i = 0;
       $result = $this->response['data'];
       foreach ($result as $key) {
-        $this->response['data'][$i]['brgy_info'] = BrgyCode::where('brgy_code', '=', $key['assigned_code'])->whereNotNull('brgy_code')->first();
+        $this->response['data'][$i]['brgy_info'] = BrgyCode::where('code', '=', $key['assigned_code'])->whereNotNull('code')->first();
         $i++;
       }
     }
