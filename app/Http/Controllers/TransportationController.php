@@ -18,6 +18,14 @@ class TransportationController extends APIController
     );
   }
 
+  public function create(Request $request){
+    $data = $request->all();
+    $data['code'] = $this->generateCode();
+    $this->model = new Transportation();
+    $this->insertDB($data);
+    return $this->response();
+  }
+
   public function retrieveTracing(Request $request){
     if($this->checkAuthenticatedUser(true) == false){
       return $this->response();
@@ -70,5 +78,15 @@ class TransportationController extends APIController
   public function getByParams($column, $value){
     $result = Transportation::where($column, '=', $value)->orderBy('updated_at', 'desc')->get();
     return (sizeof($result) > 0) ? $result[0] : null;
+  }
+
+  public function generateCode(){
+    $code = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 32);
+    $codeExist = Transportation::where('code', '=', $code)->get();
+    if(sizeof($codeExist) > 0){
+      $this->generateCode();
+    }else{
+      return $code;
+    }
   }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transportation extends APIModel
 {
   protected $table = 'transportations';
-  protected $fillable = ['account_id', 'number', 'type', 'model'];
+  protected $fillable = ['account_id', 'number', 'type', 'model', 'code'];
   
   public function userInfo(){
     return $this->hasMany('App\UserInformation', 'account_id', 'account_id');
