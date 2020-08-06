@@ -65,7 +65,7 @@ class HealthDeclarationController extends APIController
         $this->response['data'][$i]['merchant'] = app($this->merchantClass)->getByParams('account_id', $result[$i]['owner']);
         $this->response['data'][$i]['updated_at_human'] = null;
         if($result[$i]['updated_at'] != null){
-          $this->response['data'][$i]['updated_at_human'] = Carbon::createFromFormat('Y-m-d', $result[$i]['updated_at'])->tz($this->response['timezone'])->format("Y-m-d H:i:s");
+          $this->response['data'][$i]['updated_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $result[$i]['updated_at'])->tz($this->response['timezone'])->format("Y-m-d H:i:s");
         }
         $i++;
       }
