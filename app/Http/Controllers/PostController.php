@@ -25,6 +25,20 @@ class PostController extends APIController
     return $this->response();
   }
 
+  public function retrieve(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data);
+    if(sizeof($this->response['data']) > 0){
+      $i = 0;
+      $result = $this->response['data'];
+      foreach ($result as $key) {
+        $this->response['data'][$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $result[$i]['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        $i++;
+      }
+    }
+    return $this->response();
+  }
+
   public function generateCode(){
     $code = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), 0, 64);
     $codeExist = Post::where('code', '=', $code)->get();
