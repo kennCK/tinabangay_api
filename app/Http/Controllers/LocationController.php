@@ -38,7 +38,7 @@ class LocationController extends APIController
     return $this->response();
   }
 
-  public function retrieve(Request $request){
+  public function retrieveLocationsOnly(Request $request){
     $data = $request->all();
     $this->response['data'] = Location::select('id', 'code', 'route', 'country', 'locality')where($condition['condition'][0]['column'], '=', $condition['condition'][0]['value'])->get();
     return $this->response();
