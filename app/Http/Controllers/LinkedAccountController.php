@@ -70,7 +70,7 @@ class LinkedAccountController extends APIController
       $data[$i]['status'] =  $status['status'];
       $data[$i]['status_from'] =  $status['status_from'];
       $data[$i]['status_label'] =  $status['status_label'];
-      $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+      $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($data[$i]['account_id']);
       $i++;
     }
     $this->response['data'] = $data;
