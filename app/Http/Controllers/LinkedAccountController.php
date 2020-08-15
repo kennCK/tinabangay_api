@@ -28,6 +28,22 @@ class LinkedAccountController extends APIController
     return $this->response();
   }
 
+  public function retrieveEmployees(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data);
+    $data = $this->response['data'];
+    $i = 0;
+    foreach ($data as $key) {
+      $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
+      $data[$i]['assigned_location'] = null;
+      $data[$i]['address'] = null;
+      $i++;
+    }
+    $this->response['data'] = $data;
+    return $this->response();
+  }
+
   public function getLinkedAccount($column, $value){
     $result = LinkedAccount::where($column, '=', $value)->get();
     return sizeof($result) > 0 ? $result[0] : null;

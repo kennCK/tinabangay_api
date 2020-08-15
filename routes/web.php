@@ -229,6 +229,7 @@ $controller = 'LinkedAccountController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
 Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
+Route::post($route.'retrieve_employees', $controller."retrieveEmployees");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
