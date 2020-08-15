@@ -29,8 +29,8 @@ class LinkedAccountController extends APIController
   }
 
   public function retrieveEmployees(Request $request){
-    $data = $request->all();
-    $this->retrieveDB($data);
+    $condition = $request->all();
+    $this->retrieveDB($condition);
     $data = $this->response['data'];
     $i = 0;
     foreach ($data as $key) {
@@ -41,7 +41,7 @@ class LinkedAccountController extends APIController
       $i++;
     }
     $this->response['data'] = $data;
-    $this->response['size'] = LinkedAccount::where($data['condition'][0]['column'], '=', $data['condition'][0]['value'])->count();
+    $this->response['size'] = LinkedAccount::where($condition['condition'][0]['column'], '=', $condition['condition'][0]['value'])->count();
     return $this->response();
   }
 
