@@ -139,7 +139,7 @@ class VisitedPlaceController extends APIController
     }
     if(sizeof($condition['condition']) == 4){
       $con = $condition['condition'];
-        $this->respose['size'] = VisitedPlace::where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
+        $this->response['size'] = VisitedPlace::where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
         ->where($con[2]['column'], $con[2]['clause'], $con[2]['value'])
         ->where($con[3]['column'], $con[3]['clause'], $con[3]['value'])
         ->count();
