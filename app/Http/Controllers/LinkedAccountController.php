@@ -41,6 +41,7 @@ class LinkedAccountController extends APIController
       $i++;
     }
     $this->response['data'] = $data;
+    $this->response['size'] = LinkedAccount::where($data['condition'][0]['column'], '=', $data['condition'][0]['value'])->count();
     return $this->response();
   }
 
