@@ -95,7 +95,7 @@ class VisitedPlaceController extends APIController
         }
       }
       if($key['account_id'] != null){
-        $this->response['data'][$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
+        $this->response['data'][$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
       }else{
         $this->response['data'][$i]['account'] = null;
       }
@@ -130,7 +130,7 @@ class VisitedPlaceController extends APIController
         $data[$i]['status'] =  $status['status'];
         $data[$i]['status_from'] =  $status['status_from'];
         $data[$i]['status_label'] =  $status['status_label'];
-        $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+        $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($data[$i]['account_id']);
         $data[$i]['date_human'] = isset($data[$i]['date']) ? $this->daysDiffByDate($data[$i]['date']) : null;
         $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
         $result[] = $data[$i];
