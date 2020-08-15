@@ -145,14 +145,7 @@ class VisitedPlaceController extends APIController
         ->count();
     }
     $this->response['data'] = $result;
-    return json_encode(array(
-      'data'  => $result,
-      'size'  => $this->response['size'],
-      'timezone'  => $this->response['timezone'],
-      'request_timestamp' => $this->response['request_timestamp'],
-      'debug' => $this->response['debug'],
-      'error' => $this->response['error']
-    ));
+    return $this->response();
   }
 
   public function getByParams($column, $value){
