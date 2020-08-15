@@ -58,18 +58,18 @@ class VisitedPlaceController extends APIController
   }
   
   public function retrieveTracing(Request $request){
-    $data = $request->all();
+    $condition = $request->all();
 
     $radius = env('RADIUS');
     if (!isset($radius)) {
       throw new \Exception('No env variable for "RADIUS"');
     }
 
-    if (isset($data['radius'])) {
-      $radius = $data['radius'];
+    if (isset($condition['radius'])) {
+      $radius = $condition['radius'];
     }
 
-    $this->retrieveDB($data); // store to 
+    $this->retrieveDB($condition); // store to 
     $data = $this->response['data'];
     $i = 0;
     $result = array();
@@ -103,6 +103,13 @@ class VisitedPlaceController extends APIController
       $this->response['data'][$i]['date_human'] = isset($key['date']) ? $this->daysDiffByDate($key['date']) : null;
       $this->response['data'][$i]['radius'] = $radius;
       $i++;
+    }
+    if(sizeof($condition['condition']) == 3){
+      $con = $condition['condition'];
+        $this->respose['size'] = VisitedPlace::where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
+        ->where($con[1]['column'], $con[1]['clause'], $con[1]['value'])
+        ->where($con[2]['column'], $con[2]['clause'], $con[2]['value'])
+        ->count();
     }
     return $this->response();
   }
