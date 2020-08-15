@@ -132,6 +132,7 @@ $route = env('PACKAGE_ROUTE', '').'/temperature_locations/';
 $controller = 'TemperatureLocationController@';
 Route::post($route.'create', $controller."create");
 Route::get($route.'retrieve', $controller."retrieve");
+Route::get($route.'retrieve_locations_only', $controller."retrieveLocationsOnly");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
