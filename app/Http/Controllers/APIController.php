@@ -612,7 +612,7 @@ class APIController extends Controller
 
 
   public function retrieveAccountDetailsOnlyImportant($accountId){
-    $result = app('Increment\Account\Http\AccountController')->accountId($accountId);
+    $result = app('Increment\Account\Http\AccountController')->getAllowedData($accountId);
     if(sizeof($result) > 0){
       $result[0]['profile'] =  app('Increment\Account\Http\AccountProfileController')->getAccountProfile($accountId);
       $result[0]['information'] = app('Increment\Account\Http\AccountInformationController')->getAllowedData($accountId);
