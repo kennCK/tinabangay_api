@@ -36,8 +36,8 @@ class LinkedAccountController extends APIController
     foreach ($data as $key) {
       $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
-      $data[$i]['assigned_location'] = null;
-      $data[$i]['address'] = null;
+      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
+      $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
       $i++;
     }
     $this->response['data'] = $data;
