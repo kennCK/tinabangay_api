@@ -58,18 +58,18 @@ class VisitedPlaceController extends APIController
   }
   
   public function retrieveTracing(Request $request){
-    $data = $request->all();
+    $condition = $request->all();
 
     $radius = env('RADIUS');
     if (!isset($radius)) {
       throw new \Exception('No env variable for "RADIUS"');
     }
 
-    if (isset($data['radius'])) {
-      $radius = $data['radius'];
+    if (isset($condition['radius'])) {
+      $radius = $condition['radius'];
     }
 
-    $this->retrieveDB($data); // store to 
+    $this->retrieveDB($condition); // store to 
     $data = $this->response['data'];
     $i = 0;
     $result = array();
@@ -95,7 +95,7 @@ class VisitedPlaceController extends APIController
         }
       }
       if($key['account_id'] != null){
-        $this->response['data'][$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
+        $this->response['data'][$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
       }else{
         $this->response['data'][$i]['account'] = null;
       }
@@ -108,18 +108,18 @@ class VisitedPlaceController extends APIController
   }
 
   public function retrieveCustomers(Request $request){
-    $data = $request->all();
+    $condition = $request->all();
 
     $radius = env('RADIUS');
     if (!isset($radius)) {
       throw new \Exception('No env variable for "RADIUS"');
     }
 
-    if (isset($data['radius'])) {
-      $radius = $data['radius'];
+    if (isset($condition['radius'])) {
+      $radius = $condition['radius'];
     }
 
-    $this->retrieveDB($data); // store to 
+    $this->retrieveDB($condition); // store to 
     $data = $this->response['data'];
     $i = 0;
     $result = array();
@@ -130,15 +130,74 @@ class VisitedPlaceController extends APIController
         $data[$i]['status'] =  $status['status'];
         $data[$i]['status_from'] =  $status['status_from'];
         $data[$i]['status_label'] =  $status['status_label'];
-        $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+        $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($data[$i]['account_id']);
         $data[$i]['date_human'] = isset($data[$i]['date']) ? $this->daysDiffByDate($data[$i]['date']) : null;
         $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
         $result[] = $data[$i];
       }
       $i++;
     }
+    if(sizeof($condition['condition']) == 4){
+      $con = $condition['condition'];
+        $this->response['size'] = VisitedPlace::where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
+        ->where($con[2]['column'], $con[2]['clause'], $con[2]['value'])
+        ->where($con[3]['column'], $con[3]['clause'], $con[3]['value'])
+        ->count();
+    }
     $this->response['data'] = $result;
-    return $this->response();
+    return json_encode(array(
+      'data'  => $result,
+      'size'  => $this->response['size'],
+      'timezone'  => $this->response['timezone'],
+      'request_timestamp' => $this->response['request_timestamp'],
+      'debug' => $this->response['debug'],
+      'error' => $this->response['error']
+    ));
+  }
+
+  public function retrieveCustomersLimited(Request $request){
+    $condition = $request->all();
+    $con = $condition['condition'];
+
+    $data = VisitedPlace::select('id', 'date', 'created_at', 'account_id')->where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
+        ->where($con[1]['column'], $con[1]['clause'], $con[1]['value'])
+        ->where($con[2]['column'], $con[2]['clause'], $con[2]['value'])
+        ->where($con[3]['column'], $con[3]['clause'], $con[3]['value'])
+        ->limit($condition['limit'])
+        ->offset($condition['offset'])
+        ->get();
+    $i = 0;
+    $result = array();
+
+    foreach ($data as $key) {
+      if($data[$i]['account_id'] !== null){
+        $status = app($this->tracingController)->getStatusByAccountId($data[$i]['account_id']);
+        $data[$i]['status'] =  $status['status'];
+        $data[$i]['status_from'] =  $status['status_from'];
+        $data[$i]['status_label'] =  $status['status_label'];
+        $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($data[$i]['account_id']);
+        $data[$i]['date_human'] = isset($data[$i]['date']) ? $this->daysDiffByDate($data[$i]['date']) : null;
+        $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
+        $result[] = $data[$i];
+      }
+      $i++;
+    }
+    if(sizeof($condition['condition']) == 4){
+        $this->response['size'] = VisitedPlace::where($con[0]['column'], $con[0]['clause'], $con[0]['value'])
+        ->where($con[2]['column'], $con[2]['clause'], $con[2]['value'])
+        ->where($con[3]['column'], $con[3]['clause'], $con[3]['value'])
+        ->count();
+    }
+    
+    $this->response['data'] = $result;
+    return json_encode(array(
+      'data'  => $result,
+      'size'  => $this->response['size'],
+      'timezone'  => $this->response['timezone'],
+      'request_timestamp' => $this->response['request_timestamp'],
+      'debug' => $this->response['debug'],
+      'error' => $this->response['error']
+    ));
   }
 
   public function getByParams($column, $value){

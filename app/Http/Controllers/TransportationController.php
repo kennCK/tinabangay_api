@@ -68,6 +68,9 @@ class TransportationController extends APIController
     $data = $request->all();
     Transportation::where('id', '=', $data['id'])->update(
       array(
+        'type' => $data['type'],
+        'model' => $data['model'],
+        'number' => $data['number'],
         'updated_at' => Carbon::now()
       )
     );

@@ -582,7 +582,7 @@ class APIController extends Controller
     if(sizeof($result) > 0){
       $result[0]['profile'] =  app('Increment\Account\Http\AccountProfileController')->getAccountProfile($accountId);
       $result[0]['information'] = app('Increment\Account\Http\AccountInformationController')->getAccountInformation($accountId);
-      $result[0]['billing'] = app('Increment\Account\Http\BillingInformationController')->getBillingInformation($accountId);
+      // $result[0]['billing'] = app('Increment\Account\Http\BillingInformationController')->getBillingInformation($accountId);
       $result[0]['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
       return $result[0];
     }else{
@@ -600,14 +600,26 @@ class APIController extends Controller
     $result['account_profile_flag'] = false;
     $result['account_information'] = app('Increment\Account\Http\AccountInformationController')->getAccountInformation($accountId);
     $result['account_profile'] = app('Increment\Account\Http\AccountProfileController')->getAccountProfile($accountId);
-    $result['notification_settings'] = app('App\Http\Controllers\NotificationSettingController')->getNotificationSettings($accountId);
+    // $result['notification_settings'] = app('App\Http\Controllers\NotificationSettingController')->getNotificationSettings($accountId);
     $result['sub_account'] = app('Increment\Account\Http\SubAccountController')->retrieveByParams('member', $accountId);
-    $result['transportation'] = app('App\Http\Controllers\TransportationController')->getByParams('account_id', $accountId);
+    // $result['transportation'] = app('App\Http\Controllers\TransportationController')->getByParams('account_id', $accountId);
     $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($accountId);
     $result['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
     $result['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $accountId);
     $result['linked_account'] = app('App\Http\Controllers\LinkedAccountController')->getLinkedAccount('account_id', $accountId);
     return $result;
+  }
+
+
+  public function retrieveAccountDetailsOnlyImportant($accountId){
+    $result = app('Increment\Account\Http\AccountController')->getAllowedData($accountId);
+    if($result){
+      $result['profile'] =  app('Increment\Account\Http\AccountProfileController')->getAllowedData($accountId);
+      $result['information'] = app('Increment\Account\Http\AccountInformationController')->getAllowedData($accountId);
+      return $result;
+    }else{
+      return null;
+    }
   }
 
   public function daysDiffDateTime($date){

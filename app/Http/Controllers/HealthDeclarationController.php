@@ -73,6 +73,28 @@ class HealthDeclarationController extends APIController
     return $this->response();
   }
 
+  public function retrieveOnBasic(Request $request){
+    $data = $request->all();
+    $this->retrieveDB($data);
+    if(sizeof($this->response['data']) > 0){
+      $i = 0;
+      $result = $this->response['data'];
+      foreach ($result as $key) {
+        $this->response['data'][$i]['merchant'] = app($this->merchantClass)->getByParams('account_id', $result[$i]['owner']);
+        $this->response['data'][$i]['updated_at_human'] = null;
+        $content = json_decode($result[$i]['content'], true);
+        $this->response['data'][$i]['format'] = $content['format'];
+        $this->response['data'][$i]['status'] = $content['status'];
+        $this->response['data'][$i]['statusLabel'] = $content['statusLabel'];
+        if($result[$i]['updated_at'] != null){
+          $this->response['data'][$i]['updated_at_human'] =Carbon::createFromFormat('Y-m-d H:i:s', $result[$i]['updated_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        }
+        $i++;
+      }
+    }
+    return $this->response();
+  }
+
   public function update(Request $request){
     $data = $request->all();
 

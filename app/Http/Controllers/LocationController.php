@@ -38,6 +38,12 @@ class LocationController extends APIController
     return $this->response();
   }
 
+  public function retrieveLocationsOnly(Request $request){
+    $data = $request->all();
+    $this->response['data'] = Location::select('id', 'code', 'route', 'country', 'region', 'locality', 'latitude', 'longitude', 'account_id', 'payload')->where($data['condition'][0]['column'], '=', $data['condition'][0]['value'])->orderBy('route', 'asc')->get();
+    return $this->response();
+  }
+
   public function generateCode(){
     $code = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), 0, 32);
     $codeExist = Location::where('code', '=', $code)->get();

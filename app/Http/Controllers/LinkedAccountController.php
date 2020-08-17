@@ -28,6 +28,23 @@ class LinkedAccountController extends APIController
     return $this->response();
   }
 
+  public function retrieveEmployees(Request $request){
+    $condition = $request->all();
+    $this->retrieveDB($condition);
+    $data = $this->response['data'];
+    $i = 0;
+    foreach ($data as $key) {
+      $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
+      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
+      $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
+      $i++;
+    }
+    $this->response['data'] = $data;
+    $this->response['size'] = LinkedAccount::where($condition['condition'][0]['column'], '=', $condition['condition'][0]['value'])->count();
+    return $this->response();
+  }
+
   public function getLinkedAccount($column, $value){
     $result = LinkedAccount::where($column, '=', $value)->get();
     return sizeof($result) > 0 ? $result[0] : null;
@@ -53,7 +70,7 @@ class LinkedAccountController extends APIController
       $data[$i]['status'] =  $status['status'];
       $data[$i]['status_from'] =  $status['status_from'];
       $data[$i]['status_label'] =  $status['status_label'];
-      $data[$i]['account'] = $this->retrieveAccountDetails($data[$i]['account_id']);
+      $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($data[$i]['account_id']);
       $i++;
     }
     $this->response['data'] = $data;

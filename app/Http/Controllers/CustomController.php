@@ -6,6 +6,8 @@ use App\BrgyCode;
 use App\Location;
 use App\Symptom;
 use App\VisitedPlace;
+use App\Temperature;
+use App\HealthDeclaration;
 use Increment\Account\Models\Account;
 use Increment\Account\Models\SubAccount;
 use Increment\Account\Models\AccountInformation;
@@ -22,6 +24,41 @@ class CustomController extends APIController
         "email" => "unique:accounts",
         "username"  => "unique:accounts"
       );
+    }
+
+    public function getScannedAccountStatus (Request $request) {
+      $result = array(
+        'account' => null,
+        'account_information' => null,
+        'temperature' => null,
+        'location' => null,
+        'health_declaration' => null,
+        'overall_status' => null,
+        'linked_account' => null
+      );
+      $data = $request->all();
+      $scannedAccountCode =  $data['code'];
+      $merchantId = $data['merchant_id'];
+
+      $scannedAccount = Account::where('code', '=', $scannedAccountCode)->first();
+      if (sizeof($scannedAccount) > 0) {
+        $result['account'] = $scannedAccount;
+        $result['account_information'] = app('Increment\Account\Http\AccountInformationController')->getAccountInformation($scannedAccount['id']);
+        $result['temperature'] = Temperature::where('account_id', '=', $scannedAccount['id'])->orderBy('created_at', 'desc')->first();
+        $result['health_declaration'] = HealthDeclaration::where('owner', '=', $merchantId)->where('account_id', '=', $scannedAccount['id'])->orderBy('updated_at', 'desc')->first();
+        $result['location'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $scannedAccount['id']);
+        $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($scannedAccount['id']);
+        $result['linked_account'] = app('App\Http\Controllers\LinkedAccountController')->getLinkedAccount('account_id', $scannedAccount['id']);
+        
+        if ($result['temperature'] != null) {
+          $result['temperature']['created_at_human'] = $this->daysDiffDateTime($result['temperature']['created_at']);
+        }
+        if ($result['health_declaration'] != null) {
+          $result['health_declaration']['updated_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $result['health_declaration']['updated_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+        }
+      }
+
+      return $result;
     }
 
     public function importAccounts (Request $request) {
