@@ -17,11 +17,18 @@ class LinkedAccountController extends APIController
     $data = $this->response['data'];
     $i = 0;
     foreach ($data as $key) {
-      $data[$i]['owner_account'] = $this->retrieveAccountDetails($key['owner']);
-      $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
+      // $data[$i]['owner_account'] = $this->retrieveAccountDetails($key['owner']);
+      $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id'])->only(['id', 'account_type', 'code', 'username', 'information']);
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
-      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
-      $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
+      if(app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']) !== null && app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id'])){
+        $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id'])->only(['id', 'account_id', 'assigned_code', 'route', 'code', 'locality', 'region', 'country']);
+        $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id'])->only(['id', 'account_id', 'code', 'region', 'route', 'locality', 'country']);
+      }else{
+        $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
+        $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
+      }
+     
+      // dd($data[$i]['address']);
       $i++;
     }
     $this->response['data'] = $data;
