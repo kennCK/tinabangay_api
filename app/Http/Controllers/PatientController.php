@@ -98,7 +98,11 @@ class PatientController extends APIController
       $i++;
     }
     $this->response['data'] = $data;
-    $this->response['size'] = Patient::where('deleted_at', '=', null)->count();
+    if($request['type'] === 'ADMIN'){
+      $this->response['size'] = Patient::where('deleted_at', '=', null)->count();
+    }else{
+      $this->response['size'] = Patient::where('deleted_at', '=', null)->where('locality', '=', $request['localCode'])->count();
+    }
     return $this->response();
   }
 
