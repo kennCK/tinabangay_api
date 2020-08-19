@@ -17,18 +17,11 @@ class LinkedAccountController extends APIController
     $data = $this->response['data'];
     $i = 0;
     foreach ($data as $key) {
-      // $data[$i]['owner_account'] = $this->retrieveAccountDetails($key['owner']);
-      $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id'])->only(['id', 'account_type', 'code', 'username', 'information']);
+      $data[$i]['owner_account'] = $this->retrieveAccountDetails($key['owner']);
+      $data[$i]['account'] = $this->retrieveAccountDetails($key['account_id']);
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
-      if(app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']) !== null && app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id'])){
-        $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id'])->only(['id', 'account_id', 'assigned_code', 'route', 'code', 'locality', 'region', 'country']);
-        $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id'])->only(['id', 'account_id', 'code', 'region', 'route', 'locality', 'country']);
-      }else{
-        $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
-        $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
-      }
-     
-      // dd($data[$i]['address']);
+      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
+      $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -41,10 +34,14 @@ class LinkedAccountController extends APIController
     $data = $this->response['data'];
     $i = 0;
     foreach ($data as $key) {
-      $data[$i]['account'] = $this->retrieveAccountDetailsOnlyImportant($key['account_id']);
+      unset($data[$i]['created_at']);
+      unset($data[$i]['updated_at']);
+      unset($data[$i]['deleted_at']);
+      $data[$i]['account'] = $this->retrieveName($key['account_id']);
+      $data[$i]['accoun_id'] = $key['account_id'];
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
-      $data[$i]['assigned_location'] = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $key['account_id']);
-      $data[$i]['address'] = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $key['account_id']);
+      $data[$i]['assigned_location'] = $this-> retrieveAssignedLocatio($key['account_id']);
+      $data[$i]['address'] = $this->retrieveAddress($key['account_id']);
       $i++;
     }
     $this->response['data'] = $data;
@@ -82,5 +79,45 @@ class LinkedAccountController extends APIController
     }
     $this->response['data'] = $data;
     return $this->response();
+  }
+
+  public function retrieveName($accountId){
+    $result = app('Increment\Account\Http\AccountController')->retrieveById($accountId);
+    if(sizeof($result) > 0){
+      $result[0]['information'] = app('Increment\Account\Http\AccountInformationController')->getAccountInformation($accountId);
+      if($result[0]['information'] != null && $result[0]['information']['first_name'] != null && $result[0]['information']['last_name'] != null){
+        $account = array(
+          'names' => $result[0]['information']['first_name'].' '.$result[0]['information']['last_name'],
+          'account_type' => $result[0]['account_type']
+        );
+        return $account;
+      }
+      $account = array(
+        'name' => $result[0]['username'],
+        'account_type' => $result[0]['account_type']
+      );
+      return $account;
+    }else{
+      return null;
+    }
+  }
+
+  public function retrieveAssignedLocatio($accountId){
+    $assigned_location = app('App\Http\Controllers\LocationController')->getAssignedLocation('account_id', $accountId);
+    if($assigned_location != null){
+      return $assigned_location->only(['id', 'account_id', 'assigned_code', 'route']);
+    }
+    else{
+      return null;
+    }
+  }
+
+  public function retrieveAddress($accountId){
+    $address = app('App\Http\Controllers\LocationController')->getByParamsWithCode('account_id', $accountId);
+    if($address != null){
+      return $address->only(['id', 'code']);
+    }else{
+      return null;
+    }
   }
 }
