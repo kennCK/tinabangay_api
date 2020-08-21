@@ -38,6 +38,7 @@ class LinkedAccountController extends APIController
       unset($data[$i]['updated_at']);
       unset($data[$i]['deleted_at']);
       $data[$i]['account'] = $this->retrieveName($key['account_id']);
+      $data[$i]['account_owner'] = $this->retrieveName($key['owner']);
       $data[$i]['accoun_id'] = $key['account_id'];
       $data[$i]['created_at_human'] = $this->daysDiffDateTime($key['created_at']);
       $data[$i]['assigned_location'] = $this-> retrieveAssignedLocatio($key['account_id']);
