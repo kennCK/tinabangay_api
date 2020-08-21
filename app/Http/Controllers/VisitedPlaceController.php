@@ -204,7 +204,7 @@ class VisitedPlaceController extends APIController
     $places = VisitedPlace::where($column, '=', $value)->get();
     $j = 0;
     foreach ($places as $key) {
-      $places[$j]['date_human'] = isset($key['date']) ? $this->daysDiffByDate($key['date']) : null;
+      $places[$j]['date_human'] = isset($key['date']) ? $this->daysDiffByDate($key['date'], "Y-m-d") : null;
         $j++;
     }
     return $places;
