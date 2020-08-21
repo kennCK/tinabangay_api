@@ -93,7 +93,7 @@ class LinkedAccountController extends APIController
         return $account;
       }
       $account = array(
-        'name' => $result[0]['username'],
+        'names' => $result[0]['username'],
         'account_type' => $result[0]['account_type']
       );
       return $account;
