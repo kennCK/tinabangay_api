@@ -564,7 +564,8 @@ class APIController extends Controller
 
   public function deleteDB($request)
   {
-    if($this->checkAuthenticatedUser() == false){
+    if($this->checkAuthenticated
+    () == false){
       return $this->response();
     }
     $responseType = isset($request['response_type']) ? $request['response_type'] : 'json';
@@ -635,9 +636,10 @@ class APIController extends Controller
     }
   }
 
-  public function daysDiffByDate($date){
-    $currentDate = Carbon::parse(Carbon::now()->format("Y-m-d"));
-    $givenDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $date)->tz($this->response['timezone'])->format("Y-m-d"));
+  public function daysDiffByDate($date, $paramsFormat = null){
+    $defaultFormat = "Y-m-d H:i:s";
+    $currentDate = Carbon::parse(Carbon::now()->format($paramsFormat ? $paramsFormat : $defaultFormat));
+    $givenDate = Carbon::Parse(Carbon::createFromFormat($paramsFormat ? $paramsFormat : $defaultFormat, $date)->tz($this->response['timezone'])->format($paramsFormat ? $paramsFormat : $defaultFormat));
     $days = $givenDate->diffInDays($currentDate);
     if($days > 1){
       return $days .' Days Ago';
