@@ -63,6 +63,7 @@ class APIController extends Controller
   protected $rawRequest = null;
   protected $singleImageFileUpload = array();
   protected $validation = array();
+  protected $codeSource = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
   public function checkAuthenticatedUser($flag = false)
   {
