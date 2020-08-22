@@ -565,7 +565,8 @@ class APIController extends Controller
 
   public function deleteDB($request)
   {
-    if($this->checkAuthenticatedUser() == false){
+    if($this->checkAuthenticated
+    () == false){
       return $this->response();
     }
     $responseType = isset($request['response_type']) ? $request['response_type'] : 'json';
@@ -649,5 +650,5 @@ class APIController extends Controller
       return 'Today';
     }
   }
-
+  
 }
