@@ -73,6 +73,15 @@ class HealthDeclarationController extends APIController
     return $this->response();
   }
 
+  public function retrieveHDFPerOwner(Request $request){
+    $condition = $request['condition'][0]['value'];
+    $hdf_size = \DB::table('health_declarations')
+                ->select('content', 'created_at', 'account_id')
+                ->where('owner', $condition)
+                ->get();
+    return response()->json(['data'=>$hdf_size]);
+  }
+
   public function retrieveOnBasic(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);
